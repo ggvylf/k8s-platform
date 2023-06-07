@@ -27,10 +27,14 @@ vue
 
 # 后端TODO
 按照开发进度
-- [ ] 路由初始化
-- [ ] clientset初始化
+- [x] 路由初始化
+- [x] clientset初始化
+- [x] 数组的排序 过滤 分页
+  - [x] 排序 通过sort.Sort()实现
+  - [x] 过滤 
+  - [x] 分页
 - [ ] 工作负载workload
-- [ ] cluster
+- [ ] cluster操作
 - [ ] 
 
 
