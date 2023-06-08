@@ -33,7 +33,18 @@ vue
   - [x] 排序 通过sort.Sort()实现
   - [x] 过滤 
   - [x] 分页
-- [ ] 工作负载workload
+- [ ] 工作负载workload 
+  - [ ] pod
+    - [x] podList
+    - [x] 获取pod信息
+    - [x] 删除pod
+    - [x] 更新pod
+    - [ ] pod的gin route
+    - [ ] 各个ns下的pod数量
+  - [ ] containers
+    - [x] 获取pod中container.Name的list
+    - [x] 获取container的log
+  - [ ] 
 - [ ] cluster操作
 - [ ] 
 
