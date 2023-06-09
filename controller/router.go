@@ -10,4 +10,6 @@ var Router router
 
 func (r *router) InitApiRouter(router *gin.Engine) {
 	router.GET("/api/k8s/pods", Pod.GetPods)
+	router.GET("/api/k8s/poddetail", Pod.GetPodDetail)
+	router.POST("/api/k8s/deletepod", Pod.DeletePod)
 }

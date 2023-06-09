@@ -71,7 +71,6 @@ func (p *pod) GetPods(filterName, namespace string, limit, page int) (podresp *P
 	if err != nil {
 		logger.Error(errors.New("获取pod列表失败：" + err.Error()))
 		return nil, errors.New("获取pod列表失败：" + err.Error())
-		return
 	}
 
 	//实例化dataSelector对象

@@ -39,11 +39,15 @@ vue
     - [x] 获取pod信息
     - [x] 删除pod
     - [x] 更新pod
-    - [ ] pod的gin route
-    - [ ] 各个ns下的pod数量
+    - [x] 各个ns下的pod数量
   - [ ] containers
     - [x] 获取pod中container.Name的list
     - [x] 获取container的log
+  - [ ] pod的gin route
+  - [ ] deploment
+    - [x] deploment list
+    - [x] 更新deployment
+    - [ ] 创建deployment
   - [ ] 
 - [ ] cluster操作
 - [ ] 
