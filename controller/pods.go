@@ -84,7 +84,7 @@ func (p *pod) GetPodDetail(ctx *gin.Context) {
 	})
 }
 
-// 获取pod详情
+// 删除pod
 func (p *pod) DeletePod(ctx *gin.Context) {
 
 	// 请求参数
@@ -115,6 +115,43 @@ func (p *pod) DeletePod(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"msg":  "删除pod成功",
+		"data": nil,
+	})
+}
+
+// 更新pod
+// 获取podlist
+func (p *pod) UpdatePod(ctx *gin.Context) {
+
+	// 请求参数
+	params := new(struct {
+		Name       string `form:"name"`
+		Namespace  string `form:"namespace"`
+		UpdateInfo string `form: "updateinfo"`
+	})
+
+	// 参数绑定
+	if err := ctx.Bind(params); err != nil {
+		logger.Error("参数绑定失败：" + err.Error())
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  "参数绑定失败：" + err.Error(),
+			"data": nil,
+		})
+		return
+	}
+
+	err := service.Pod.UpdatePod(params.Name, params.Namespace, params.Name)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"msg":  err.Error(),
+			"data": nil,
+		})
+		return
+
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"msg":  "更新pod成功",
 		"data": nil,
 	})
 }

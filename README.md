@@ -34,20 +34,24 @@ vue
   - [x] 过滤 
   - [x] 分页
 - [ ] 工作负载workload 
-  - [ ] pod
+  - [x] pod
     - [x] podList
     - [x] 获取pod信息
     - [x] 删除pod
     - [x] 更新pod
     - [x] 各个ns下的pod数量
-  - [ ] containers
+  - [x] containers
     - [x] 获取pod中container.Name的list
     - [x] 获取container的log
-  - [ ] pod的gin route
+  - [x] pod的gin route
   - [ ] deploment
     - [x] deploment list
     - [x] 更新deployment
-    - [ ] 创建deployment
+    - [x] 创建deployment
+    - [x] 重启deployment
+    - [x] 各个ns下的deployment数量
+  - [ ] deployment的gin route
+  - [ ] 
   - [ ] 
 - [ ] cluster操作
 - [ ] 
