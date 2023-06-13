@@ -12,13 +12,13 @@ vue
 # 目录结构
 ```shell
 ├── config # 配置参数
-├── controller # api
+├── controller # api router接口
 ├── dao # db交互
 ├── db # db相关
 ├── docs # 文档
 ├── middle # 中间件
 ├── modle # struct定义
-├── service #业务逻辑
+├── service  #业务逻辑 跟k8s交互
 ├── utils # 其他工具
 └── web  # 前端
 
@@ -51,9 +51,21 @@ vue
     - [x] 重启deployment
     - [x] 各个ns下的deployment数量
   - [ ] deployment的gin route
-  - [ ] 
-  - [ ] 
-- [ ] cluster操作
+  - [ ] daemonset
+  - [ ] statefuset
+- [ ] 集群资源
+  - [ ] node
+  - [ ] ns
+  - [ ] pv
+- [ ] 网络
+  - [ ] service
+    - [x] createservice 
+  - [ ] ingress
+    - [x] createingress
+- [ ] 存储
+  - [ ] configmap
+  - [ ] secret
+  - [ ] pvc
 - [ ] 
 
 

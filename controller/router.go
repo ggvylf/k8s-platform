@@ -21,6 +21,7 @@ func (r *router) InitApiRouter(router *gin.Engine) {
 
 	// deployment
 	router.GET("/api/k8s/deployments", Deployment.GetDeployments)
+	router.GET("/api/k8s/deploymentdetail", Deployment.GetDeploymentDetail)
 	router.GET("/api/k8s/scaledeployment", Deployment.ScaleDeployment)
 	router.GET("/api/k8s/createdeployment", Deployment.CreateDeployment)
 	router.GET("/api/k8s/restartdeployment", Deployment.RestartDeployment)

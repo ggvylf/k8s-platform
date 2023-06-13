@@ -120,6 +120,16 @@ func (p *deployment) Getdeployments(filterName, namespace string, limit, page in
 }
 
 // 获取deployment详情
+func (d *deployment) GetDeploymentDetail(name, namespace string) (deploy *appsv1.Deployment, err error) {
+
+	deploy, err = K8s.ClientSet.AppsV1().Deployments(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+	if err != nil {
+		logger.Error(errors.New("获取deployment详情失败：" + err.Error()))
+		return nil, errors.New("获取deployment详情失败：" + err.Error())
+	}
+	return deploy, nil
+}
+
 // 修改deployment副本个数
 func (d *deployment) ScaleDeployment(deploymentName, namespace string, scaleNum int) (replica int32, err error) {
 
