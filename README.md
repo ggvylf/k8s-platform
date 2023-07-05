@@ -17,7 +17,7 @@ vue
 ├── db # db相关
 ├── docs # 文档
 ├── middle # 中间件
-├── modle # struct定义
+├── model # struct定义
 ├── service  #业务逻辑 跟k8s交互
 ├── utils # 其他工具
 └── web  # 前端
@@ -66,8 +66,14 @@ vue
   - [ ] configmap
   - [ ] secret
   - [ ] pvc
+- [ ] workflow
+  - [x] gorm db连接初始化 
+  - [ ] 数据处理
+  - [ ] client-go crud 
+  - [ ] mysql crud
+  - [ ] 缓存crud 例如redis
+- [ ] middleware
 - [ ] 
-
 
 
 

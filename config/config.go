@@ -1,5 +1,21 @@
 package config
 
-var ListenAddr = "0.0.0.0:9999"
-var Kubeconfig = "~/.kube/config"
-var PodLogTailLline = 100
+var (
+	// api
+	ListenAddr = "0.0.0.0:9999"
+
+	// k8s
+	Kubeconfig      = "~/.kube/config"
+	PodLogTailLline = 100
+
+	// mysql
+	DbUser = "root"
+	DbPwd  = "123456"
+	DbHost = "127.0.0.1"
+	DbPort = 3306
+	DbName = "k8splatform"
+
+	DbMaxIdles    = 3
+	DbMaxConns    = 50
+	DbMaxLifetime = 500
+)
