@@ -84,4 +84,6 @@ func (i *ingress) CreateIngress(data *IngressCreate) (err error) {
 		logger.Error(errors.New("创建ingress失败：" + err.Error()))
 		return errors.New("创建ingress失败：" + err.Error())
 	}
+
+	return nil
 }
