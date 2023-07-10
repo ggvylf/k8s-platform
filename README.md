@@ -13,17 +13,21 @@ vue
 ```shell
 ├── config # 配置参数
 ├── controller # api router接口
-├── dao # db交互
+├── dao # db交互相关，crud model中定义的struc的操作
 ├── db # db相关
 ├── docs # 文档
 ├── middle # 中间件
-├── model # struct定义
-├── service  #业务逻辑 跟k8s交互
+├── model # 数据结构体定义
+├── service  #业务逻辑 跟k8s交互 跟db交互
 ├── utils # 其他工具
 └── web  # 前端
 
 ```
+# 开发流程
+model --> dao -->  service -->  controller -->  router
 
+# 请求处理过程
+router --> controller --> service --> dao
 
 # 后端TODO
 按照开发进度
@@ -72,6 +76,10 @@ vue
   - [ ] client-go crud 
   - [ ] mysql crud
   - [ ] 缓存crud 例如redis
+- [ ] model
+  - [x] workflow 
+- [ ] dao
+  - [x] workflow  
 - [ ] middleware
 - [ ] 
 

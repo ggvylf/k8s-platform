@@ -17,5 +17,5 @@ var (
 
 	DbMaxIdles    = 3
 	DbMaxConns    = 50
-	DbMaxLifetime = 500
+	DbMaxLifetime = 30
 )
