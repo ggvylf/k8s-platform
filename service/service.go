@@ -63,3 +63,14 @@ func (s *service) CreateService(data *ServiceCreate) (err error) {
 	return nil
 
 }
+
+func (s *service) DeleteService(name, namespace string) (err error) {
+	err = K8s.ClientSet.CoreV1().Services(namespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
+
+	if err != nil {
+		logger.Error(errors.New("删除service失败：" + err.Error()))
+		return errors.New("删除service失败：" + err.Error())
+	}
+
+	return nil
+}

@@ -30,6 +30,6 @@ type Workflow struct {
 	Type string `json:"service_type",gorm:"cloumn:type"`
 }
 
-func (*workflow) TableName() string {
+func (*Workflow) TableName() string {
 	return "workflow"
 }

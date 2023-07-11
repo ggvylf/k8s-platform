@@ -9,6 +9,10 @@ gin client-go
 前端：
 vue
 
+# 代码参考
+https://github.com/dqzboy/DKube
+
+
 # 目录结构
 ```shell
 ├── config # 配置参数
@@ -79,6 +83,8 @@ router --> controller --> service --> dao
 - [ ] model
   - [x] workflow 
 - [ ] dao
+  - [x] workflow  
+- [ ] service
   - [x] workflow  
 - [ ] middleware
 - [ ] 

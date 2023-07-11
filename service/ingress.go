@@ -87,3 +87,14 @@ func (i *ingress) CreateIngress(data *IngressCreate) (err error) {
 
 	return nil
 }
+
+func (i *ingress) DeleteIngress(name, namespace string) (err error) {
+	err = K8s.ClientSet.NetworkingV1().Ingresses(namespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
+	if err != nil {
+		logger.Error(errors.New("删除ingress失败：" + err.Error()))
+		return errors.New("删除ingress失败：" + err.Error())
+	}
+
+	return nil
+
+}

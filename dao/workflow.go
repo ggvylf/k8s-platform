@@ -64,8 +64,8 @@ func (w *workflow) GetById(id int) (workflow *model.Workflow, err error) {
 }
 
 // 新增workflow
+// dao层不负责组装workflow数据，组装交给service层做
 func (w *workflow) Add(workflow *model.Workflow) (err error) {
-
 	tx := db.DB.Create(&workflow)
 	if tx.Error != nil && tx.Error.Error() != "record not found" {
 		logger.Error("新增workflow失败，" + tx.Error.Error())
