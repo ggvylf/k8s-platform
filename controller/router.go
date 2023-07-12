@@ -30,4 +30,9 @@ func (r *router) InitApiRouter(router *gin.Engine) {
 	router.PUT("/api/k8s/updatedeployment", Deployment.UpdateDeployment)
 	router.DELETE("/api/k8s/deletedeployment", Deployment.DeleteDeployment)
 
+	// workflow
+	router.GET("/api/workflow/list", Workflow.GetList)
+	router.GET("/api/workflow/getdetail", Workflow.GetById)
+	router.GET("/api/workflow/create", Workflow.Create)
+	router.DELETE("/api/workflow/delete", Workflow.Delete)
 }

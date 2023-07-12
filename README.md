@@ -16,9 +16,9 @@ https://github.com/dqzboy/DKube
 # 目录结构
 ```shell
 ├── config # 配置参数
-├── controller # api router接口
-├── dao # db交互相关，crud model中定义的struc的操作
-├── db # db相关
+├── controller # api接口 router配置
+├── dao # db交互crud，model中定义的struct的操作
+├── db # 连接db相关
 ├── docs # 文档
 ├── middle # 中间件
 ├── model # 数据结构体定义
@@ -30,7 +30,7 @@ https://github.com/dqzboy/DKube
 # 开发流程
 model --> dao -->  service -->  controller -->  router
 
-# 请求处理过程
+# web请求处理过程
 router --> controller --> service --> dao
 
 # 后端TODO
@@ -76,16 +76,11 @@ router --> controller --> service --> dao
   - [ ] pvc
 - [ ] workflow
   - [x] gorm db连接初始化 
-  - [ ] 数据处理
-  - [ ] client-go crud 
-  - [ ] mysql crud
-  - [ ] 缓存crud 例如redis
-- [ ] model
-  - [x] workflow 
-- [ ] dao
-  - [x] workflow  
-- [ ] service
-  - [x] workflow  
+  - [x] model
+  - [x] dao
+  - [x] service
+  - [x] controller
+  - [x] router
 - [ ] middleware
 - [ ] 
 

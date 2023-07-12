@@ -10,7 +10,7 @@ type workflow struct{}
 var Workflow workflow
 
 // 整合了相关资源的参数
-// type表示资源的类型 ingress svc clusterip等
+// type表示svc资源的类型 Ingress nodePort ClusterIP等
 type WorkflowCreate struct {
 	Name          string                 `json:"name"`
 	Namespace     string                 `json:"namespace"`
@@ -78,43 +78,6 @@ func (w *workflow) CreateWorkFlow(data *WorkflowCreate) (err error) {
 	return err
 }
 
-func (w *workflow) DeleteById(id int) (err error) {
-	workflow, err := dao.Workflow.GetById(id)
-	if err != nil {
-		return err
-	}
-	err = delWorkflowRes(workflow)
-	if err != nil {
-		return err
-	}
-	err = dao.Workflow.DeleteByID(id)
-	if err != nil {
-		return err
-	}
-	return
-}
-
-func delWorkflowRes(workflow *model.Workflow) (err error) {
-	err = Deployment.DeleteDeployment(workflow.Name, workflow.Namespace)
-	if err != nil {
-		return err
-	}
-
-	err = Service.DeleteService(getServiceName(workflow.Name), workflow.Namespace)
-	if err != nil {
-		return err
-	}
-
-	if workflow.Type == "Ingress" {
-		err = Ingress.DeleteIngress(getIngressName(workflow.Name), workflow.Namespace)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 // 根据workflow 创建对应的deploy svc ingress
 func createWorkflowRes(data *WorkflowCreate) (err error) {
 	// deploy
@@ -143,6 +106,7 @@ func createWorkflowRes(data *WorkflowCreate) (err error) {
 	} else {
 		serviceType = "ClusterIP"
 	}
+
 	sc := &ServiceCreate{
 		Name:          getServiceName(data.Name),
 		Namespace:     data.Namespace,
@@ -166,6 +130,52 @@ func createWorkflowRes(data *WorkflowCreate) (err error) {
 			Hosts:     data.Hosts,
 		}
 		err = Ingress.CreateIngress(ic)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (w *workflow) DeleteWorkflowById(id int) (err error) {
+
+	// 从db中获取workflow信息
+	workflow, err := dao.Workflow.GetById(id)
+	if err != nil {
+		return err
+	}
+
+	// 删除workflow资源
+	err = delWorkflowRes(workflow)
+	if err != nil {
+		return err
+	}
+
+	// 从db中删除workflow
+	err = dao.Workflow.DeleteByID(id)
+	if err != nil {
+		return err
+	}
+	return
+}
+
+func delWorkflowRes(workflow *model.Workflow) (err error) {
+	// deploy
+	err = Deployment.DeleteDeployment(workflow.Name, workflow.Namespace)
+	if err != nil {
+		return err
+	}
+
+	// svc
+	err = Service.DeleteService(getServiceName(workflow.Name), workflow.Namespace)
+	if err != nil {
+		return err
+	}
+
+	// ingress
+	if workflow.Type == "Ingress" {
+		err = Ingress.DeleteIngress(getIngressName(workflow.Name), workflow.Namespace)
 		if err != nil {
 			return err
 		}
