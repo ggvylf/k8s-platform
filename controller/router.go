@@ -8,6 +8,10 @@ type router struct{}
 
 var Router router
 
+func (r *router) LoginRouter(router *gin.Engine) {
+	router.POST("/api/login", Login.Login)
+}
+
 func (r *router) InitApiRouter(router *gin.Engine) {
 
 	// pod

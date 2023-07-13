@@ -18,4 +18,7 @@ var (
 	DbMaxIdles    = 3
 	DbMaxConns    = 50
 	DbMaxLifetime = 30
+
+	//jwt
+	JwtSecret = "my-secret"
 )

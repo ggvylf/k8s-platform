@@ -82,6 +82,8 @@ router --> controller --> service --> dao
   - [x] controller
   - [x] router
 - [ ] middleware
+  - [x] cors
+  - [x] jwt
 - [ ] 
 
 
