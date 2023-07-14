@@ -19,6 +19,9 @@ var (
 	DbMaxConns    = 50
 	DbMaxLifetime = 30
 
-	//jwt
+	// jwt
 	JwtSecret = "my-secret"
+
+	// webshell
+
 )
