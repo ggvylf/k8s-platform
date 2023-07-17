@@ -42,8 +42,10 @@ type TerminalSession struct {
 	doneChan chan struct{}
 }
 
-// 初始化RESTClient，这里不使用用ClientSet，需要重新初始化
+// websocket的handler 跟gin不是同一个接口
 func (t *terminal) WsHander(w http.ResponseWriter, r *http.Request) {
+
+	// 初始化RESTClient，这里不使用用ClientSet，需要重新初始化
 	conf, err := clientcmd.BuildConfigFromFlags("", config.Kubeconfig)
 	if err != nil {
 		logger.Error("加载kubeconfig失败，" + err.Error())
@@ -58,7 +60,7 @@ func (t *terminal) WsHander(w http.ResponseWriter, r *http.Request) {
 	podname := r.Form.Get("podname")
 	containername := r.Form.Get("container_name")
 
-	// 创建爱你websocket
+	// 创建websocket
 	pty, err := NewTerminalSession(w, r, nil)
 	if err != nil {
 		logger.Error("创建pty失败，" + err.Error())
@@ -69,7 +71,7 @@ func (t *terminal) WsHander(w http.ResponseWriter, r *http.Request) {
 		pty.Close()
 	}()
 
-	//拼接请求
+	//拼接POST请求
 	req := K8s.ClientSet.CoreV1().RESTClient().Post().
 		Resource("pods").Name(podname).Namespace(namespace).SubResource("exec").
 		VersionedParams(&corev1.PodExecOptions{
@@ -99,6 +101,7 @@ func (t *terminal) WsHander(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logger.Error("执行 pod 命令失败, " + err.Error())
 		pty.Write([]byte("执行 pod 命令失败, " + err.Error()))
+		// 关闭session
 		pty.Done()
 	}
 
@@ -153,6 +156,7 @@ func (t *TerminalSession) Next() *remotecommand.TerminalSize {
 }
 
 // 接收从web端的输入内容
+// 返回值表示读取了数据个数
 func (t *TerminalSession) Read(p []byte) (int, error) {
 
 	// 从ws读取数据
@@ -166,7 +170,7 @@ func (t *TerminalSession) Read(p []byte) (int, error) {
 
 	// 解析数据
 	var msg TerminalMessage
-	if err := json.Unmarshal([]byte(readmsg), msg); err != nil {
+	if err := json.Unmarshal(readmsg, &msg); err != nil {
 		logger.Error("unmarshal msg failed,", err)
 		return 0, err
 	}
@@ -177,6 +181,7 @@ func (t *TerminalSession) Read(p []byte) (int, error) {
 		return copy(p, msg.Data), nil
 	case "resize":
 		t.sizeChan <- remotecommand.TerminalSize{Width: msg.Cols, Height: msg.Rows}
+		return 0, nil
 	case "ping":
 		return 0, nil
 	default:
@@ -190,6 +195,7 @@ func (t *TerminalSession) Read(p []byte) (int, error) {
 // 输出内容到web端
 func (t *TerminalSession) Write(p []byte) (int, error) {
 
+	//  序列化数据
 	msg, err := json.Marshal(TerminalMessage{
 		Operation: "stdout",
 		Data:      string(p),

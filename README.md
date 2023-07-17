@@ -27,10 +27,12 @@ https://github.com/dqzboy/DKube
 └── web  # 前端
 
 ```
-# 开发流程
+
+# 后端流程
+## 开发流程
 model --> dao -->  service -->  controller -->  router
 
-# web请求处理过程
+## web请求处理过程
 router --> controller --> service --> dao
 
 # 后端TODO
@@ -84,13 +86,17 @@ router --> controller --> service --> dao
 - [ ] middleware
   - [x] cors
   - [x] jwt
-- [ ] web终端
-- [ ] 
-- [ ] 
+- [x] web终端
 
+# 前端流程
+## 开发流程
+/route/index.js --> src/views/xx.vue --> html+css 布局 小组件 js 动态数据
 
+## 请求处理流程
 
+index.html --> App.vue --> route/index.js --> src/views/xx.vue
 
 # 前端TODO
+- [ ] 初始化vue项目
 - [ ] 
 

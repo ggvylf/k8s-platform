@@ -12,6 +12,13 @@ func (r *router) LoginRouter(router *gin.Engine) {
 	router.POST("/api/login", Login.Login)
 }
 
+func (r *router) WebRouter(router *gin.Engine) {
+	router.Static("/", "./web")
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(200, "/public/index.html", nil)
+	})
+}
+
 func (r *router) InitApiRouter(router *gin.Engine) {
 
 	// pod

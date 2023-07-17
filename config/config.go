@@ -2,7 +2,10 @@ package config
 
 var (
 	// api
-	ListenAddr = "0.0.0.0:9999"
+	ListenAddr = "0.0.0.0:10000"
+
+	// websocket
+	WsAddr = "0.0.0.0:10001"
 
 	// k8s
 	Kubeconfig      = "~/.kube/config"
