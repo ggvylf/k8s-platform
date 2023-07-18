@@ -96,7 +96,36 @@ router --> controller --> service --> dao
 
 index.html --> App.vue --> route/index.js --> src/views/xx.vue
 
+## 代码目录
+```shell
+.
+├── index.html
+├── node_modules # 模块
+├── package.json
+├── package-lock.json
+├── public
+│   └── favicon.ico
+├── README.md
+├── src
+│   ├── App.vue
+│   ├── assets
+│   ├── components
+│   ├── layout # 布局
+│   ├── main.js
+│   ├── router # 路由
+│   ├── utils  # 工具
+│   └── views  # 视图
+└── vite.config.js
+
+```
+
 # 前端TODO
-- [ ] 初始化vue项目
-- [ ] 
+- [x] 初始化vue项目 npm init vue@latest  npm install
+- [x] 初始化vite.config.js
+- [x] 初始化main.js 
+- [x] 初始化App.vue
+- [x] 创建views router layout utils目录
+- [ ] 创建路由 route/index.js
+- [ ] 安装相关插件 npm install element-plus
+- [ ] 启动项目 npm run dev
 
