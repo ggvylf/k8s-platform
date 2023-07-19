@@ -11,7 +11,7 @@ import 'element-plus/dist/index.css'
 import * as ELIcons from '@element-plus/icons-vue'
 
 // 路由配置
-// import router from './router'
+import router from './router'
 
 
 // createApp(App).mount('#app')
@@ -27,6 +27,6 @@ for(let iconName in ELIcons) {
 // 使用elementplus
 app.use(ElementPlus)
 // 使用路由
-// app.use(router)
+app.use(router)
 // 挂载
 app.mount('#app')

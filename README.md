@@ -118,6 +118,22 @@ index.html --> App.vue --> route/index.js --> src/views/xx.vue
 └── vite.config.js
 
 ```
+## npm命令相关
+```shell
+# 初始化vue项目
+npm init vue@latest
+
+# 依赖包
+npm install element-plus vue-router nprogess  axios
+
+
+# 测试
+npm run dev
+
+# 构建
+npm build
+```
+
 
 # 前端TODO
 - [x] 初始化vue项目 npm init vue@latest  npm install
@@ -125,7 +141,10 @@ index.html --> App.vue --> route/index.js --> src/views/xx.vue
 - [x] 初始化main.js 
 - [x] 初始化App.vue
 - [x] 创建views router layout utils目录
-- [ ] 创建路由 route/index.js
-- [ ] 安装相关插件 npm install element-plus
-- [ ] 启动项目 npm run dev
-
+- [x] 创建路由 route/index.js vue-router
+- [x] 安装相关插件 npm install element-plus
+- [x] 启动项目 npm run dev
+- [x] 进度条 Nprogress
+- [x] axios http 拦截器
+- [x] 错误页处理
+- [ ] 整体布局 
