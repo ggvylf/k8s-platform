@@ -5,24 +5,82 @@ import {createRouter,createWebHistory} from 'vue-router'
 import Nprogress from 'nprogress'
 import 'nprogress/nprogress.css'
 
+// 布局
+import Layout from '@/layout/Layout.vue'
 
 // 路由规则
 const routers = [
-    {
-        // 视图
-        path:'/home',
-        // 视图组件
-        component:() => import('@/views/home/Home.vue'),
-        // 图标
-        icon: 'odometer',
 
-        // meta信息
+    // 整体布局
+    // 主页面
+    {
+        path:'/',
+        component: Layout,
+        // component:() => import('@/layout/Layout.vue'),
         meta:{
-            title:"概要",
+            title:"k8s",
             requireAuth: false,
-        }
+        },
+        children: [
+            {
+                // 视图
+                path:'/home',
+                // 视图组件
+                component:() => import('@/views/home/Home.vue'),
+                // 图标
+                icon: 'odometer',
+        
+                // meta信息
+                meta:{
+                    title:"概要",
+                    requireAuth: false,
+                }
+                
+            },
+        ]
         
     },
+
+
+    // 工作负载
+    {
+        path:'/workload',
+        name: '工作负载',
+        component: Layout,
+        icon:'menu',
+        meta:{
+            title:"工作负载",
+            requireAuth: false,
+        },
+        children: [
+            {
+                path:'/workload/deployment',
+                name: 'Deployment',
+                icon: 'odometer',
+                meta:{
+                    title:"deployment",
+                    requireAuth: false,
+                },
+                component:() => import('@/views/workload/Deployment.vue'),
+                        
+            },
+            {
+                path:'/workload/pod',
+                name: 'Pod',
+                icon: 'odometer',
+                meta:{
+                    title:"pod",
+                    requireAuth: false,
+                },
+                component:() => import('@/views/workload/Pod.vue'),
+                        
+            },
+        ]
+        
+    },
+    
+
+
 
     // 错误页
     {
