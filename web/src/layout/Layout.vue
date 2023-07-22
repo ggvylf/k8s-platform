@@ -17,7 +17,7 @@
                     </div>
                 </el-affix>
                 <!-- 侧边栏菜单 -->
-                <!-- 菜单和路由做了关联 折叠做了关联 -->
+                <!-- 菜单和路由做了关联 菜单折叠做了关联 -->
                 <el-menu class="aside-menu"
                     router
                     :default-active="$route.path"
@@ -27,12 +27,16 @@
                     active-text-color="#20a0ff">
                     <!-- 遍历路由生成菜单 -->
                     <div v-for="menu in routers" :key="menu">
+                        <!-- 只有一个子路由的情况，例如摘要，主路由的路径就是子路由 生效的是子路由 主路由写啥都行 -->
                         <el-menu-item class="aside-menu-item" v-if="menu.children && menu.children.length == 1" :index="menu.children[0].path">
+                        <!-- 引入图标     -->
                         <el-icon><component :is="menu.children[0].icon" /></el-icon>
                         <template #title>
                             {{menu.children[0].name}}
                         </template>
                         </el-menu-item>
+                        <!-- 子路由有多个 显示用的主路由的信息 -->
+                        <!-- el-sub-menu折叠后title不会消失，需要自行处理  el-menu-item会消失-->
                         <el-sub-menu class="aside-submenu" v-else-if="menu.children" :index="menu.path">
                             <template #title>
                                 <el-icon><component :is="menu.icon" /></el-icon>
@@ -53,13 +57,16 @@
                 <el-header class="header" >
                     <el-row :gutter="20">
                         <el-col :span="1">
+                            <!-- 折叠按钮 -->
                             <div class="header-collapse" @click="onCollapse">
                                 <el-icon><component :is="isCollapse ? 'expand':'fold'" /></el-icon>
                             </div>
                         </el-col>
                         <el-col :span="10" >
+                            <!-- 面包屑 这里用/作为分割符 -->
                             <div class="header-breadcrumb">
                                 <el-breadcrumb separator="/" v-if="this.$route.matched[0].path != '/main'">
+                                    <!-- 根路径写死 -->
                                     <el-breadcrumb-item :to="{ path: '/' }">工作台</el-breadcrumb-item>
                                     <template v-for="(matched,m) in this.$route.matched" :key="m">
                                         <el-breadcrumb-item v-if="matched.name != undefined" >
@@ -72,6 +79,7 @@
                                 </el-breadcrumb> 
                             </div>
                         </el-col>
+                        <!-- 用户信息相关 -->
                         <el-col class="header-menu" :span="13">
                             <el-dropdown>
                                 <div class="header-dropdown">
@@ -88,14 +96,17 @@
                         </el-col>
                     </el-row>
                 </el-header>
+                <!-- main相关 -->
                 <el-main class="main">
                     <!-- 嵌套路由视图 -->
                     <router-view></router-view>
                 </el-main>
+                <!-- footer相关 -->
                 <el-footer class="footer">
                     <el-icon style="width:2em;top:3px;font-size:18px"><place/></el-icon>
-                    <a class="footer el-icon-place">2022 DevOps </a>
+                    <a class="footer el-icon-place">2023 DevOps </a>
                 </el-footer>
+                <!-- 返回顶部 -->
                 <el-backtop target=".el-main"></el-backtop>
             </el-container>
         </el-container>
@@ -105,6 +116,12 @@
 <script>
 import {useRouter} from 'vue-router'
 export default {
+    // 前置操作
+    // 从routes中获取全部的router规则
+    beforeMount() {
+        this.routers = useRouter().options.routes
+    },
+    // 数据
     data() {
         return {
             avator: require('@/assets/avator/avator.png'),
@@ -115,12 +132,14 @@ export default {
         }
     },
     computed: {
+        // 获取用户名
         username() {
             let username = localStorage.getItem('username');
             return username ? username : '未知';
         },
     },
     methods: {
+        // 折叠操作
         onCollapse() {
             if (this.isCollapse) {
                 this.asideWidth = '220px'
@@ -130,23 +149,24 @@ export default {
                 this.asideWidth = '64px'
             }
         },
+        // 登出
         logout() {
             localStorage.removeItem('username');
             localStorage.removeItem('token');
             this.$router.push('/login');
         }
     },
-    beforeMount() {
-        this.routers = useRouter().options.routes
-    }
+
 }
 </script>
 
 <style scoped>
+/* 侧边栏 */
     .aside {
         transition: all .5s;
         background-color: #131b27;
     }
+    /* 固钉 */
     .aside-logo {
         background-color: #131b27;
         height: 60px;
@@ -164,15 +184,19 @@ export default {
         font-weight: bold;
         padding: 10px;
     }
+    /* 滚动条 */
     .aside::-webkit-scrollbar {
         display: none;
     }
+    /* 修整边框 */
     .aside-affix {
         border-bottom-width: 0;
     }
     .aside-menu {
         border-right-width: 0;
     }
+    /* 菜单栏的颜色 */
+    /* 选中 */
     .aside-menu-item.is-active {
         background-color: #1f2a3a;
     }
@@ -185,10 +209,14 @@ export default {
     .aside-menu-childitem.is-active {
         background-color: #1f2a3a;
     }
+    /* 悬停 */
     .aside-menu-childitem:hover {
         background-color: #142c4e;
     }
+
+    /* header相关 */
     .header {
+        /* 优先级 */
         z-index:1200;
         line-height: 60px;
         font-size: 24px;
