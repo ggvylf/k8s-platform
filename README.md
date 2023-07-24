@@ -108,7 +108,7 @@ index.html --> App.vue --> route/index.js --> src/views/xx.vue
 ├── README.md
 ├── src
 │   ├── App.vue
-│   ├── assets
+│   ├── assets 
 │   ├── components
 │   ├── layout # 布局
 │   ├── main.js

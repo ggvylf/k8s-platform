@@ -1,11 +1,11 @@
 <template>
-  <span>this is App.vue</span>
+  <!-- <span>this is App.vue</span> -->
   <!-- 路由占位符 会匹配到$route.path的视图组件 -->
   <router-view></router-view>
 </template>
 
 <style>
-  html, body{
+  .html, body{
   width: 100%;
   height: 100%;
   padding: 0;
@@ -18,4 +18,4 @@
 }
 </style>
 
-<script setup lang="ts"></script>
+<script ></script>

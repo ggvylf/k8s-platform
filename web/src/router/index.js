@@ -11,10 +11,16 @@ import Layout from '@/layout/Layout.vue'
 // 路由规则
 const routers = [
 
-    // 整体布局
-    // 主页面
+    // 访问/跳转到/home
     {
         path:'/',
+        redirect:'/home',
+    },
+
+
+    // 主页面
+    {
+        path:'/home',
         component: Layout,
         // component:() => import('@/layout/Layout.vue'),
         meta:{
@@ -25,6 +31,7 @@ const routers = [
             {
                 // 视图
                 path:'/home',
+                name: "概要",
                 // 视图组件
                 component:() => import('@/views/home/Home.vue'),
                 // 图标
@@ -56,7 +63,7 @@ const routers = [
             {
                 path:'/workload/deployment',
                 name: 'Deployment',
-                icon: 'odometer',
+                icon: 'el-icon-s-data',
                 meta:{
                     title:"deployment",
                     requireAuth: false,
@@ -67,7 +74,7 @@ const routers = [
             {
                 path:'/workload/pod',
                 name: 'Pod',
-                icon: 'odometer',
+                icon: 'el-icon-document-add',
                 meta:{
                     title:"pod",
                     requireAuth: false,

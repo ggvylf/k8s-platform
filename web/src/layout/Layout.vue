@@ -8,8 +8,10 @@
                 <el-affix class="aside-affix" :z-index="1200">
                     <div class="aside-logo" >
                         <!-- 平台logo图片 -->
-                        <el-image class="logo-image" :src="logo" />
+                        <el-image class="logo-image" :src="logoimg" />
                         <!-- 折叠侧边栏，折叠后不显示名称 -->
+                        <!-- 判断折叠状态 --> 
+                        <!-- 三元运算符，true返回is-collapse，false返回'' -->
                         <span :class="[isCollapse ? 'is-collapse' : '']">
                             <!-- 平台显示名称 -->
                             <span class="logo-name" >k8s-platform</span>
@@ -25,11 +27,11 @@
                     background-color="#131b27"
                     text-color="#bfcbd9"
                     active-text-color="#20a0ff">
-                    <!-- 遍历路由生成菜单 -->
+                    <!-- 遍历路由生成菜单 routers是变量，是从router.routes中获取-->
                     <div v-for="menu in routers" :key="menu">
                         <!-- 只有一个子路由的情况，例如摘要，主路由的路径就是子路由 生效的是子路由 主路由写啥都行 -->
                         <el-menu-item class="aside-menu-item" v-if="menu.children && menu.children.length == 1" :index="menu.children[0].path">
-                        <!-- 引入图标     -->
+                        <!-- 处理图标  -->
                         <el-icon><component :is="menu.children[0].icon" /></el-icon>
                         <template #title>
                             {{menu.children[0].name}}
@@ -37,11 +39,14 @@
                         </el-menu-item>
                         <!-- 子路由有多个 显示用的主路由的信息 -->
                         <!-- el-sub-menu折叠后title不会消失，需要自行处理  el-menu-item会消失-->
-                        <el-sub-menu class="aside-submenu" v-else-if="menu.children" :index="menu.path">
+                        <el-sub-menu class="aside-submenu" v-else-if="menu.children && menu.children.length >1" :index="menu.path">
+                            <!-- 父菜单标题 -->
                             <template #title>
                                 <el-icon><component :is="menu.icon" /></el-icon>
+                                <!-- 折叠状态下隐藏menu.name -->
                                 <span :class="[isCollapse ? 'is-collapse' : '']">{{menu.name}}</span>
                             </template>
+                            <!-- 子菜单标题 for循环 -->
                             <el-menu-item class="aside-menu-childitem" v-for="child in menu.children" :key="child" :index="child.path">
                                 <el-icon><component :is="child.icon" /></el-icon>
                                 <template #title>
@@ -68,6 +73,7 @@
                                 <el-breadcrumb separator="/" v-if="this.$route.matched[0].path != '/main'">
                                     <!-- 根路径写死 -->
                                     <el-breadcrumb-item :to="{ path: '/' }">工作台</el-breadcrumb-item>
+                                    <!-- 2个元素是value,key -->
                                     <template v-for="(matched,m) in this.$route.matched" :key="m">
                                         <el-breadcrumb-item v-if="matched.name != undefined" >
                                         {{ matched.name }}
@@ -79,13 +85,15 @@
                                 </el-breadcrumb> 
                             </div>
                         </el-col>
-                        <!-- 用户信息相关 -->
+                        <!-- 用户信息 -->
                         <el-col class="header-menu" :span="13">
                             <el-dropdown>
                                 <div class="header-dropdown">
-                                    <el-image class="avator-image" :src="avator" />
+                                    <!-- 用户头像 -->
+                                    <el-image class="avator-image" :src=avatorimg />
                                     <span>{{ username }}</span>
                                 </div>
+                                <!-- 下拉框 -->
                                 <template #dropdown>
                                     <el-dropdown-menu>
                                         <el-dropdown-item icon="el-icon-switch-button" @click="logout()">退出</el-dropdown-item>
@@ -114,18 +122,16 @@
 </template>
 
 <script>
+import avatorimg from '@/assets/avator/avator.png'
+import logoimg from '@/assets/k8s/logo.png'
 import {useRouter} from 'vue-router'
+
 export default {
-    // 前置操作
-    // 从routes中获取全部的router规则
-    beforeMount() {
-        this.routers = useRouter().options.routes
-    },
     // 数据
     data() {
         return {
-            avator: require('@/assets/avator/avator.png'),
-            logo: require('@/assets/k8s/k8s-metrics.png'),
+            avatorimg,
+            logoimg,
             isCollapse: false,
             asideWidth: '220px',
             routers: [],
@@ -139,11 +145,13 @@ export default {
         },
     },
     methods: {
-        // 折叠操作
+        // 折叠操作，true是收起，false是展开
         onCollapse() {
+            // 当前状态是收起
             if (this.isCollapse) {
                 this.asideWidth = '220px'
                 this.isCollapse = false
+            // 当前状态是展开的
             } else {
                 this.isCollapse = true
                 this.asideWidth = '64px'
@@ -156,6 +164,10 @@ export default {
             this.$router.push('/login');
         }
     },
+    // 从routes中获取全部的router规则
+    beforeMount() {
+        this.routers = useRouter().options.routes
+    },
 
 }
 </script>
@@ -166,12 +178,17 @@ export default {
         transition: all .5s;
         background-color: #131b27;
     }
-    /* 固钉 */
+
     .aside-logo {
         background-color: #131b27;
         height: 60px;
         color: white;
         cursor: pointer;
+    }
+    /* 固钉 */
+    .aside-affix{
+        z-index:1200;
+        border-bottom-width: 0;
     }
     .logo-image {
         width: 40px;
@@ -183,15 +200,13 @@ export default {
         font-size: 20px;
         font-weight: bold;
         padding: 10px;
+        color: white;
     }
     /* 滚动条 */
     .aside::-webkit-scrollbar {
         display: none;
     }
-    /* 修整边框 */
-    .aside-affix {
-        border-bottom-width: 0;
-    }
+
     .aside-menu {
         border-right-width: 0;
     }
