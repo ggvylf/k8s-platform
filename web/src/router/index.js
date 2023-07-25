@@ -68,7 +68,7 @@ const routers = [
                     title:"deployment",
                     requireAuth: false,
                 },
-                component:() => import('@/views/workload/Deployment.vue'),
+                component:() => import('@/views/deployment/Deployment.vue'),
                         
             },
             {
@@ -79,7 +79,7 @@ const routers = [
                     title:"pod",
                     requireAuth: false,
                 },
-                component:() => import('@/views/workload/Pod.vue'),
+                component:() => import('@/views/pod/Pod.vue'),
                         
             },
         ]

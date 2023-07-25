@@ -4,11 +4,12 @@ import axios from 'axios'
 // 创建axios实例
 const httpClient = axios.create({
     // 相应状态码验证，不在范围的不给相应
-    validateStatus:{
-        return status >=200 && status < 504
+    validateStatus() {
+        return true
+        // return status >=200 && status < 504
     },
     // 超时，单位是ms
-    timeout: 10000
+    timeout: 10000,
 })
 
 // 请求重试相关

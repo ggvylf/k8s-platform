@@ -147,4 +147,10 @@ npm build
 - [x] 进度条 Nprogress
 - [x] axios http 拦截器
 - [x] 错误页处理
-- [ ] 整体布局 
+- [x] 根路径跳转/home
+- [x] 静态资源引用
+- [x] 整体框架布局
+- [x] 后端api接口 Config.js
+- [x] workload页面布局
+- [x] workload的deployment的header1
+- [ ] workload的deployment的header1
