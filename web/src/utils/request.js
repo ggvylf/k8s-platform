@@ -9,13 +9,15 @@ const httpClient = axios.create({
         // return status >=200 && status < 504
     },
     // 超时，单位是ms
-    timeout: 10000,
+    // timeout: 10000,
+    timeout: 10,
 })
 
 // 请求重试相关
 httpClient.defaults.retry=3
-httpClient.defaults.retryDelay=1000
-httpClient.defaults.shouldRetry=true
+// httpClient.defaults.retryDelay=1000
+httpClient.defaults.retryDelay=10
+// httpClient.defaults.shouldRetry=true
 
 
 // 请求拦截器

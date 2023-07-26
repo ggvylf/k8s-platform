@@ -11,6 +11,8 @@ vue
 
 # 代码参考
 https://github.com/dqzboy/DKube
+https://github.com/dnsjia/luban
+
 
 
 # 目录结构
@@ -152,5 +154,9 @@ npm build
 - [x] 整体框架布局
 - [x] 后端api接口 Config.js
 - [x] workload页面布局
-- [x] workload的deployment的header1
-- [ ] workload的deployment的header1
+  - [x] deployment的header1
+  - [ ] deployment的header2
+  - [ ] deployment的隐藏抽屉
+  - [ ] 隐藏抽屉的气泡弹出框
+  - [ ] 隐藏抽屉的表单校验
+  - [ ] 
