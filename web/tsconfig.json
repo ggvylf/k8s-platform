@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
       "isolatedModules": true,
+      "types": ["element-plus/global"],
       
     }
 }
