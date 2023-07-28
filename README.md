@@ -155,8 +155,20 @@ npm build
 - [x] 后端api接口 Config.js
 - [x] workload页面布局
   - [x] deployment的header1
-  - [ ] deployment的header2
-  - [ ] deployment的隐藏抽屉
-  - [ ] 隐藏抽屉的气泡弹出框
-  - [ ] 隐藏抽屉的表单校验
-  - [ ] 
+    - [x] 下拉列表
+    - [x] 刷新
+  - [x] deployment的header2
+    - [x] 创建按钮 弹出隐藏抽屉
+    - [x] 搜索框
+    - [x] 搜索按钮  inline
+  - [x] deployment的隐藏抽屉
+    - [x] 抽屉的结构 
+    - [x] 隐藏抽屉的气泡弹出框
+    - [x] 隐藏抽屉的表单校验
+    - [x] 隐藏抽屉的表单提交
+  - [ ] 数据表格
+    - [x] getDeployment() 函数
+    - [x] 表格结构
+    - [x] label处理
+    - [ ] 操作列按钮
+    - [ ] 分页操作

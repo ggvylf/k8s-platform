@@ -1,62 +1,152 @@
 <template>
-<div class="deploy">
-    <el-row>
-        <!-- header1 用来选择ns 和刷新 -->
-        <el-col :span="24">
-            <div>
-                <el-card class="dfeploy-head-card" shadow="never" :body-style="{padding:'10'}">
-                    <el-row>
-                        <!-- 下拉列表 -->
-                        <el-col :span="6">
-                            <div>
-                                <span>命名空间: </span>
-                                <el-select v-model="namespaceValue" filterable placeholder="请选择">
-                                    <el-option v-for="(item,index) in namespaceList" 
-                                    :key="index" 
-                                    :label="item.metadata.name" 
-                                    :value="item.metadata.name">
-                                    </el-option>
-                                </el-select>
-                            </div>
-                        </el-col>
-                        <!-- 刷新按钮 -->
-                        <el-col :span="2" :offset=16>
-                            <div>
-                                <el-button style="border-radius:2px" icon="Refresh" plain>刷新</el-button>
-                            </div>
-                        </el-col>
-                    </el-row>
+    <div class="deploy">
+        <el-row>
+            <!-- header1 用来选择ns 和刷新 -->
+            <el-col :span="24">
+                <div>
+                    <el-card class="dfeploy-head-card" shadow="never" :body-style="{padding:'10'}">
+                        <el-row>
+                            <!-- 下拉列表 -->
+                            <el-col :span="6">
+                                <div>
+                                    <span>命名空间: </span>
+                                    <el-select v-model="namespaceValue" filterable placeholder="请选择">
+                                        <el-option v-for="(item,index) in namespaceList" 
+                                        :key="index" 
+                                        :label="item.metadata.name" 
+                                        :value="item.metadata.name">
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                            </el-col>
+                            <!-- 刷新按钮 -->
+                            <!-- 刷新的时候会重新请求表格数据 -->
+                            <el-col :span="2" :offset=16>
+                                <div>
+                                    <el-button style="border-radius:2px" icon="Refresh" plain @click="getDeployments()">刷新</el-button>
+                                </div>
+                            </el-col>
+                        </el-row>
 
-                </el-card>
-            </div>
-        </el-col>
-        <!-- header2 用来创建资源 和提供搜索-->
-        <el-col :span="24">
-            <div>
-                <el-card class="deploy-head-card" shadow="never" :body-style="{padding:'10px'}">
-                    <el-row>
-                        <!-- 创建资源按钮 -->
-                        <el-col :span="2">
-                            <div>
-                                <el-button style="border-radius: 2px;" icon="edit" type="primary" v-loading.fullscreen.lock="fullscreenloading" @click="createDeploymentDrawer=true">创建</el-button>
-                            </div>
-                        </el-col>
-                        <!-- 搜索框和搜索按钮 -->
-                        <el-col :span="6">
-                            <div>
-                                <el-input class="deploy-head-serach" clearable placeholder="请输入" v-model="searchinput"></el-input>
-                                <el-button style="border-radius: 2px;" icon="search" type="primary" plain @click="getDeployments()">搜索</el-button>
-                            </div>
-                        </el-col>
-                </el-row>
-                </el-card>
-            </div>
-        </el-col>
-        <!-- 抽屉 -->
+                    </el-card>
+                </div>
+            </el-col>
+
+            <!-- header2 用来创建资源 和提供搜索-->
+            <el-col :span="24">
+                <div>
+                    <el-card class="deploy-head-card" shadow="never" :body-style="{padding:'10px'}">
+                        <el-row >
+                            <!-- 创建资源按钮 -->
+                            <el-col :span="2" >
+                                <div>
+                                    <el-button style="border-radius: 2px;" icon="edit" type="primary" v-loading.fullscreen.lock="fullscreenloading" @click="createDeploymentDrawer=true">创建</el-button>
+                                </div>
+                            </el-col>
+                            <!-- 搜索框和搜索按钮 -->
+                            <el-col :span="6" >
+                                <div >
+                                    <el-input class="deploy-head-search" clearable placeholder="请输入" v-model="searchInput"></el-input>
+                                    <el-button style="border-radius: 2px;" icon="search" type="primary" plain @click="getDeployments()">搜索</el-button>
+                                </div>
+                            </el-col>
+                    </el-row>
+                    </el-card>
+                </div>
+            </el-col>
+
+            <!-- 数据表格 -->
+            <el-col :span="24">
+                <div>
+                    <el-card class="deploy-body-card" shadow="never" :body-style="{padding:'5px'}">
+                        <el-table style="width: 100%;font-size: 12px;margin-bottom: 10px;"
+                        :data="deploymentList">
+                            <el-table-column width="20"></el-table-column>
+                            <el-table-column align="center" label="名称">
+                                <template v-slot="scope">
+                                    <a class="deploy-body-deployname">{{ scope.row.metedata.name }}</a>
+                                </template>
+                            </el-table-column>
+                            <el-table-column align="center" label="标签">
+                                <template v-slot="scope">
+                                    <!-- 遍历label -->
+                                    <div v-for="(val,key) in scope.row.metadata.labels" key="key">
+                                        <!-- 气泡框 -->
+                                        <el-popover
+                                        placement="right"
+                                        :width="200"
+                                        trigger="hover"
+                                        :content="key+':'+value">
+                                            <template #reference>
+                                                <!-- 对超过长度的label做省略处理 -->
+                                                <el-tag style="margin-bottom: 5px;" type="warning">ellipsis({{ key+':'+value }})</el-tag>
+                                            </template>
+                                        </el-popover>
+                                    </div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column align=center label="容器组">
+                                <template v-slot="scope">
+                                    <!-- 显示当前容器和总容器个数 -->
+                                    <span>{{ scope.row.status.availableReplicas>0?scope.row.status.availableReplicas:0  }} / {{ scope.row.spec.replicas>0?scope.row.spec.replicas:0 }} </span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column align=center min-width="100" label="创建时间">
+                                <template v-slot="scope">
+                                    <!-- 时间转换 -->
+                                    <el-tag type="info">{{ timeTrans(scope.row.metadata.creationTimestamp) }} </el-tag>
+                                </template>
+                            </el-table-column>
+                            <el-table-column align=center label="镜像">
+                                <template v-slot="scope">
+                                    <!-- 遍历image列表 -->
+                                    <div v-for="(val, key) in scope.row.spec.template.spec.containers" :key="key">
+                                        <el-popover
+                                            placement="right"
+                                            :width="200"
+                                            trigger="hover"
+                                            :content="val.image">
+                                            <template #reference>
+                                                <!-- 对image名称做分割 超过长度省略处理-->
+                                                <el-tag style="margin-bottom: 5px">{{ ellipsis(val.image.split('/')[2]==undefined?val.image:val.image.split('/')[2]) }}</el-tag>
+                                            </template>
+                                        </el-popover>
+                                    </div>
+                                </template>
+                            </el-table-column>
+                            <!-- 资源操作 -->
+                            <el-table-column align=center label="操作" width="400">
+                                <template v-slot="scope">
+                                    <el-button size="small" style="border-radius:2px;" icon="Edit" type="primary" plain @click="getDeploymentDetail(scope)">YAML</el-button>
+                                    <el-button size="small" style="border-radius:2px;" icon="Plus" type="primary" @click="handleScale(scope)">扩缩</el-button>
+                                    <el-button size="small" style="border-radius:2px;" icon="RefreshLeft" type="primary" @click="handleConfirm(scope, '重启', restartDeployment)">重启</el-button>
+                                    <el-button size="small" style="border-radius:2px;" icon="Delete" type="danger" @click="handleConfirm(scope, '删除', delDeployment)">删除</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+
+                        <!-- 分页 -->
+                        <el-pagination
+                            class="deploy-body-pagination"
+                            background
+                            @size-change="handleSizeChange"
+                            @current-change="handleCurrentChange"
+                            :current-page="currentPage"
+                            :page-sizes="pagesizeList"
+                            :page-size="pagesize"
+                            layout="total, sizes, prev, pager, next, jumper"
+                            :total="deploymentTotal">
+                        </el-pagination>
+                    </el-card>
+                </div>
+            </el-col>
+        </el-row>
+
+        <!-- 创建deployment抽屉 -->
         <el-drawer 
-        v-model="createDeploymentDrawer" 
-        :direction="direction" 
-        :before-close="handleClose">
+            v-model="createDeploymentDrawer" 
+            :direction="direction" 
+            :before-close="handleClose">
             <!-- 抽屉标题 -->
             <template #header>
                 <h4>创建Deployment</h4>
@@ -131,14 +221,39 @@
                 <el-button type="primary" @click="submitForm('createDeployment')">立即创建</el-button>
             </template>
         </el-drawer>
-        <!-- 数据表格 -->
-        <el-col :span="24">
-            <div>
-                789
+
+        <!-- 资源操作弹出框 -->
+
+        <el-dialog title="YAML信息" v-model="yamlDialog" width="45%" top="2%">
+            <codemirror
+                :value="contentYaml"
+                border
+                :options="cmOptions"
+                height="500"
+                style="font-size:14px;"
+                @change="onChange"
+            ></codemirror>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="this.yamlDialog = false">取 消</el-button>
+                    <el-button type="primary" @click="updateDeployment()">更 新</el-button>
+                </span>
+            </template>
+        </el-dialog>
+
+        <el-dialog title="副本数调整" v-model="scaleDialog" width="25%">
+            <div style="text-align:center">
+                <span>实例数: </span>
+                <el-input-number :step="1" v-model="scaleNum" :min="0" :max="30" label="描述文字"></el-input-number>
             </div>
-        </el-col>
-    </el-row>
-</div>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="scaleDialog = false">取 消</el-button>
+                    <el-button type="primary" @click="scaleDeployment()">更 新</el-button>
+                </span>
+            </template>
+        </el-dialog>
+    </div>
 </template>
 
 
@@ -209,10 +324,69 @@ export default {
                 }],
 
             },
-
-
             // search
-            searchinput:"",
+            searchInput:"",
+
+            // deployment列表
+            deploymentList:[],
+            // 表格loading动画
+            apploading:false,
+            deploymentTotal:0,
+            getDeploymentData:{
+                url:common.k8sDeploymentList,
+                params:{
+                    filter_name:"",
+                    namespace:"",
+                    page:1,
+                    limit:10,
+                },
+            },
+            // 分页
+            currentPage:1,
+            pagesize:10,
+            pagesizeList:[10,20,50],
+
+            // 资源操作
+            deploymentDetail: {},
+            getDeploymentDetailData: {
+                url: common.k8sDeploymentDetail,
+                params: {
+                    deployment_name: '',
+                    namespace: ''
+                }
+            },
+            yamlDialog: false,
+            updateDeploymentData: {
+                url: common.k8sDeploymentUpdate,
+                params: {
+                    namespace: '',
+                    content: ''
+                }
+            },
+            scaleNum: 0,
+            scaleDialog: false,
+            scaleDeploymentData: {
+                url: common.k8sDeploymentScale,
+                params: {
+                    deployment_name: '',
+                    namespace: '',
+                    scale_num: ''
+                }
+            },
+            restartDeploymentData: {
+                url: common.k8sDeploymentRestart,
+                params: {
+                    deployment_name: '',
+                    namespace: '',
+                }
+            },
+            delDeploymentData: {
+                url: common.k8sDeploymentDel,
+                params: {
+                    deployment_name: '',
+                    namespace: '',
+                }
+            },
             
         }
     },
@@ -228,6 +402,7 @@ export default {
                 })
             })
         },
+
         // 抽屉的关闭确认
         handleClose(done) {
             this.confirm("确认关闭")
@@ -251,6 +426,7 @@ export default {
                 }
             })
         },
+
         createDeployFunc(){
             // 验证label字段是否合规
             let reg = new RegExp("(^[A-Za-z]+=[A-Za-z0-9]+).*")
@@ -313,12 +489,181 @@ export default {
             this.$refs[formName].resetFields()
         },
 
+
+        // 获取deployment列表
+        getDeployments() {
+            // 填充参数
+            this.apploading=true
+            this.getDeploymentData.params.filter_name=this.searchInput
+            this.getDeploymentData.params.namespace=this.namespaceValue
+            this.getDeploymentData.params.page=this.currentPage
+            this.getDeploymentData.params.pagesize=this.pagesize 
+
+            // 请求后端
+            httpClient.get(this.getDeploymentData.url,{params:this.getDeploymentData.params})
+            .then(res => {
+    
+                this.deploymentList=res.data.items
+                this.deploymentTotal=res.data.total
+            })
+            .catch(res => {
+                this.$message.error({
+                message: res.msg
+                })
+            })
+
+            // 请求完成关闭加载动画
+            this.apploading=false
+        },
+
+        // 字符串截取,截取前15个字符+...
+        // app:test,myapp:...
+        ellipsis(value) {
+            return value.length>15?value.substring(0,15)+'...':value
+        },
+
+        // 时间转换UTC到CTS
+        timeTrans(timestamp) {
+            let date = new Date(new Date(timestamp).getTime() + 8 * 3600 * 1000)
+            date = date.toJSON();
+            date = date.substring(0, 19).replace('T', ' ')
+            return date 
+        },
+
+
+        // 资源操作
+        // 查看deployment详情
+        getDeploymentDetail(e) {
+            this.getDeploymentDetailData.params.deployment_name = e.row.metadata.name
+            this.getDeploymentDetailData.params.namespace = this.namespaceValue
+            httpClient.get(this.getDeploymentDetailData.url, {params: this.getDeploymentDetailData.params})
+            .then(res => {
+                this.deploymentDetail = res.data
+                this.contentYaml = this.transYaml(this.deploymentDetail)
+                this.yamlDialog = true
+            })
+            .catch(res => {
+                this.$message.error({
+                message: res.msg
+                })
+            })
+        },
+
+        // 更新deployment
+        updateDeployment() {
+            let content = JSON.stringify(this.transObj(this.contentYaml))
+            this.updateDeploymentData.params.namespace = this.namespaceValue
+            this.updateDeploymentData.params.content = content
+            httpClient.put(this.updateDeploymentData.url, this.updateDeploymentData.params)
+            .then(res => {
+                this.$message.success({
+                message: res.msg
+                })
+                this.getDeployments()
+            })
+            .catch(res => {
+                this.$message.error({
+                message: res.msg
+                })
+            })
+            this.yamlDialog = false
+        },
+
+        // 扩缩容
+        handleScale(e) {
+            this.scaleDialog = true
+            this.deploymentDetail = e.row
+            this.scaleNum = e.row.spec.replicas
+        },
+
+        // 修改deployment副本数
+        scaleDeployment() {
+            this.scaleDeploymentData.params.deployment_name = this.deploymentDetail.metadata.name
+            this.scaleDeploymentData.params.namespace = this.namespaceValue
+            this.scaleDeploymentData.params.scale_num = this.scaleNum
+            httpClient.put(this.scaleDeploymentData.url, this.scaleDeploymentData.params)
+            .then(res => {
+                this.$message.success({
+                message: res.msg
+                })
+                this.getDeployments()
+            })
+            .catch(res => {
+                this.$message.error({
+                message: res.msg
+                })
+            })
+            this.scaleDialog = false
+        },
+
+        // 重启deployment
+        restartDeployment(e) {
+            this.restartDeploymentData.params.deployment_name = e.row.metadata.name
+            this.restartDeploymentData.params.namespace = this.namespaceValue
+            httpClient.put(this.restartDeploymentData.url, this.restartDeploymentData.params)
+            .then(res => {
+                this.$message.success({
+                message: res.msg
+                })
+                this.getDeployments()
+            })
+            .catch(res => {
+                this.$message.error({
+                message: res.msg
+                })
+            })
+        },
+
+        // 删除deployment
+        delDeployment(e) {
+            this.delDeploymentData.params.deployment_name = e.row.metadata.name
+            this.delDeploymentData.params.namespace = this.namespaceValue
+            httpClient.delete(this.delDeploymentData.url, {data: this.delDeploymentData.params})
+            .then(res => {
+                this.$message.success({
+                message: res.msg
+                })
+                this.getDeployments()
+            })
+            .catch(res => {
+                this.$message.error({
+                message: res.msg
+                })
+            })
+        },
+
+        // 操作确认
+        handleConfirm(obj, operateName, fn) {
+            this.confirmContent = '确认继续 ' + operateName + ' 操作吗？'
+
+            this.$confirm(this.confirmContent,'提示',{
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+            })
+            // 点击确认后执行对应的函数
+            .then(() => {
+                fn(obj)
+            })
+            .catch(() => {
+                this.$message.info({
+                    message: '已取消操作'
+                })          
+            })
+        },
+
     },
     watch: {
-        // 把ns写入localstorage，方便其他页面调用
+        // namespace变更相关
         namespaceValue: {
             handler() {
+
+                // 写入localstorage
                 localStorage.setItem('namespace',this.getNamespaceValue)
+
+                // 重置page页数，不重置看不到数据
+                this.currentPage=1
+                // 获取depoyment列表
+                this.getDeployments()
             }
         }
     },
@@ -327,7 +672,10 @@ export default {
         if (localStorage.getItem('namespace') !== "undfined" && localStorage.getItem('namespace') !==null) {
             this.namespaceValue=localStorage.getItem('namespace')
         }
+        // 获取ns列表
         this.getNamespaceList()
+        // 获取depoyment列表
+        this.getDeployments()
 
     },
 }
@@ -335,15 +683,24 @@ export default {
 
 </script>
 
-<style>
-    .deploy-head-card,.deploy-body-card{
+<style scoped>
+    .deploy-head-card,.deploy-body-card {
         border-radius: 1px;
         margin-bottom: 5px;
-
     }
     .deploy-head-search {
-        width: 160px;
+        width:160px;
+        margin-right: 10px; 
+    }
+    .deploy-body-deployname {
+        color: #4795EE;
+    }
+    .deploy-body-deployname:hover {
+        color: rgb(84, 138, 238);
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .dialog-footer {
         margin-right: 10px;
     }
-
 </style>
