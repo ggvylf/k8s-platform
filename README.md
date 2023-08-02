@@ -126,7 +126,7 @@ index.html --> App.vue --> route/index.js --> src/views/xx.vue
 npm init vue@latest
 
 # 依赖包
-npm install element-plus vue-router nprogess  axios
+npm install element-plus vue-router nprogess  axios codemirror-editor-vue3 js-yaml json2yaml
 
 
 # 测试
@@ -154,21 +154,30 @@ npm build
 - [x] 整体框架布局
 - [x] 后端api接口 Config.js
 - [x] workload页面布局
-  - [x] deployment的header1
-    - [x] 下拉列表
-    - [x] 刷新
-  - [x] deployment的header2
-    - [x] 创建按钮 弹出隐藏抽屉
-    - [x] 搜索框
-    - [x] 搜索按钮  inline
-  - [x] deployment的隐藏抽屉
-    - [x] 抽屉的结构 
-    - [x] 隐藏抽屉的气泡弹出框
-    - [x] 隐藏抽屉的表单校验
-    - [x] 隐藏抽屉的表单提交
-  - [ ] 数据表格
-    - [x] getDeployment() 函数
-    - [x] 表格结构
-    - [x] label处理
-    - [ ] 操作列按钮
-    - [ ] 分页操作
+  - [ ] deployment 
+    - [x] deployment的header1
+      - [x] 下拉列表
+      - [x] 刷新
+    - [x] deployment的header2
+      - [x] 创建按钮 弹出隐藏抽屉
+      - [x] 搜索框
+      - [x] 搜索按钮  inline
+    - [x] deployment的隐藏抽屉
+      - [x] 抽屉的结构 
+      - [x] 隐藏抽屉的气泡弹出框
+      - [x] 隐藏抽屉的表单校验
+      - [x] 隐藏抽屉的表单提交
+    - [ ] 数据表格
+      - [x] getDeployment() 函数
+      - [x] 表格结构
+      - [x] label处理
+      - [ ] 分页操作
+      - [ ] 操作按钮
+        - [ ]  npm install codemirror-editor-vue3 js-yaml json2yaml 
+        - [ ] 全局加载codemirror
+        - [ ] yaml详细信息
+        - [ ] 调整replicas
+        - [ ] 删除deployment
+        - [ ] 重启depoyment
+  - [ ] pod
+    - [ ] 

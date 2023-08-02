@@ -13,6 +13,13 @@ import * as ELIcons from '@element-plus/icons-vue'
 // 路由配置
 import router from './router'
 
+// codeimrror
+import { GlobalCmComponent } from 'codemirror-editor-vue3';
+// 外观
+// import 'codemirror/theme/idea.css'
+// 引入支持语言，这里只用到了yaml
+// import 'codemirror/mode/yaml/yaml.js'
+
 
 // createApp(App).mount('#app')
 // 创建vue实例
@@ -26,6 +33,10 @@ for(let iconName in ELIcons) {
 
 // 使用elementplus
 app.use(ElementPlus)
+
+// 使用codemirror
+app.use(GlobalCmComponent, { componentName: "codemirror" });
+
 // 使用路由
 app.use(router)
 // 挂载

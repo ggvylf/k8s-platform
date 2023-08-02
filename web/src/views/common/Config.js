@@ -60,7 +60,7 @@ export default {
     k8sTerminalWs: 'ws://localhost:8081/ws',
 
 
-    // yaml编辑相关
+    // codemirror编辑器配置
     cmOptions: {
         mode: 'text/yaml',
         theme: 'idea',

@@ -4,7 +4,7 @@
             <!-- header1 用来选择ns 和刷新 -->
             <el-col :span="24">
                 <div>
-                    <el-card class="dfeploy-head-card" shadow="never" :body-style="{padding:'10'}">
+                    <el-card class="deploy-head-card" shadow="never" :body-style="{padding:'10'}">
                         <el-row>
                             <!-- 下拉列表 -->
                             <el-col :span="6">
@@ -114,8 +114,8 @@
                                     </div>
                                 </template>
                             </el-table-column>
-                            <!-- 资源操作 -->
-                            <el-table-column align=center label="操作" width="400">
+                            <!-- 资源操作按钮 -->
+                            <el-table-column align="center" label="操作" width="400" >
                                 <template v-slot="scope">
                                     <el-button size="small" style="border-radius:2px;" icon="Edit" type="primary" plain @click="getDeploymentDetail(scope)">YAML</el-button>
                                     <el-button size="small" style="border-radius:2px;" icon="Plus" type="primary" @click="handleScale(scope)">扩缩</el-button>
@@ -126,14 +126,15 @@
                         </el-table>
 
                         <!-- 分页 -->
+                        <!-- page-size和currnet-page变更时触发对应函数 -->
                         <el-pagination
                             class="deploy-body-pagination"
                             background
                             @size-change="handleSizeChange"
                             @current-change="handleCurrentChange"
-                            :current-page="currentPage"
+                            current-page="currentPage"
                             :page-sizes="pagesizeList"
-                            :page-size="pagesize"
+                            page-size="pagesize"
                             layout="total, sizes, prev, pager, next, jumper"
                             :total="deploymentTotal">
                         </el-pagination>
@@ -223,7 +224,6 @@
         </el-drawer>
 
         <!-- 资源操作弹出框 -->
-
         <el-dialog title="YAML信息" v-model="yamlDialog" width="45%" top="2%">
             <codemirror
                 :value="contentYaml"
@@ -260,6 +260,9 @@
 <script>
 import common from "@/views/common/Config"
 import httpClient from "@/utils/request"
+// 局部引入
+import yaml2obj from 'js-yaml';
+import json2yaml from 'json2yaml';
 export default { 
     data() {
         return {
@@ -346,7 +349,14 @@ export default {
             pagesize:10,
             pagesizeList:[10,20,50],
 
-            // 资源操作
+
+            // 编辑器配置
+            cmOptions: common.cmOptions,
+            contentYaml:'',
+    
+
+
+            // 资源操作初始数据
             deploymentDetail: {},
             getDeploymentDetailData: {
                 url: common.k8sDeploymentDetail,
@@ -402,6 +412,17 @@ export default {
                 })
             })
         },
+
+        // 分页操作
+        handleSizeChange(size) {
+            this.pagesize = size;
+            this.getDeployments()
+        },
+        handleCurrentChange(currentPage) {
+            this.currentPage = currentPage;
+            this.getDeployments()
+        },
+
 
         // 抽屉的关闭确认
         handleClose(done) {
@@ -532,14 +553,33 @@ export default {
 
 
         // 资源操作
-        // 查看deployment详情
+
+        // content转yaml
+        transYaml(content) {
+            return json2yaml.stringify(content)
+        },
+
+
+        // yaml转content
+        transObj(content ) {
+            return yaml2obj.load(content)
+        },
+
+        // 编辑器内容变化时更新contentYaml
+        onChange(val) {
+            this.contentYaml=val
+        },
+
+        // 查看deployment详情，e表示行的数据
         getDeploymentDetail(e) {
             this.getDeploymentDetailData.params.deployment_name = e.row.metadata.name
             this.getDeploymentDetailData.params.namespace = this.namespaceValue
             httpClient.get(this.getDeploymentDetailData.url, {params: this.getDeploymentDetailData.params})
             .then(res => {
                 this.deploymentDetail = res.data
+                // 显示到编辑器里
                 this.contentYaml = this.transYaml(this.deploymentDetail)
+                // 打开编辑器弹出框
                 this.yamlDialog = true
             })
             .catch(res => {
@@ -551,14 +591,17 @@ export default {
 
         // 更新deployment
         updateDeployment() {
+            // 把编辑器里的内容转换格式，赋值给content
             let content = JSON.stringify(this.transObj(this.contentYaml))
             this.updateDeploymentData.params.namespace = this.namespaceValue
             this.updateDeploymentData.params.content = content
+            // 更新用put操作
             httpClient.put(this.updateDeploymentData.url, this.updateDeploymentData.params)
             .then(res => {
                 this.$message.success({
                 message: res.msg
                 })
+                // 更新成功刷新列表
                 this.getDeployments()
             })
             .catch(res => {
@@ -566,13 +609,17 @@ export default {
                 message: res.msg
                 })
             })
+            // 关闭弹出框
             this.yamlDialog = false
         },
 
         // 扩缩容
         handleScale(e) {
+            // 打开弹出框
             this.scaleDialog = true
+            // 赋值deployment的详细信息
             this.deploymentDetail = e.row
+            // 把replicas赋值给当前的值进行展示
             this.scaleNum = e.row.spec.replicas
         },
 
@@ -580,6 +627,7 @@ export default {
         scaleDeployment() {
             this.scaleDeploymentData.params.deployment_name = this.deploymentDetail.metadata.name
             this.scaleDeploymentData.params.namespace = this.namespaceValue
+            // 这里的this.scaleNum是调整以后点击按钮提交的值。
             this.scaleDeploymentData.params.scale_num = this.scaleNum
             httpClient.put(this.scaleDeploymentData.url, this.scaleDeploymentData.params)
             .then(res => {
@@ -632,7 +680,7 @@ export default {
             })
         },
 
-        // 操作确认
+        // 弹出确认框
         handleConfirm(obj, operateName, fn) {
             this.confirmContent = '确认继续 ' + operateName + ' 操作吗？'
 
