@@ -126,7 +126,7 @@ index.html --> App.vue --> route/index.js --> src/views/xx.vue
 npm init vue@latest
 
 # 依赖包
-npm install element-plus vue-router nprogess  axios codemirror-editor-vue3 js-yaml json2yaml
+npm install element-plus vue-router nprogess  axios codemirror-editor-vue3 js-yaml json2yaml xterm
 
 
 # 测试
@@ -171,13 +171,17 @@ npm build
       - [x] getDeployment() 函数
       - [x] 表格结构
       - [x] label处理
-      - [ ] 分页操作
-      - [ ] 操作按钮
-        - [ ]  npm install codemirror-editor-vue3 js-yaml json2yaml 
-        - [ ] 全局加载codemirror
-        - [ ] yaml详细信息
-        - [ ] 调整replicas
-        - [ ] 删除deployment
-        - [ ] 重启depoyment
+      - [x] 分页操作
+      - [x] 操作按钮
+        - [x]  npm install codemirror-editor-vue3 js-yaml json2yaml 
+        - [x] 全局加载codemirror
+        - [x] yaml详细信息
+        - [x] 调整replicas
+        - [x] 删除deployment
+        - [x] 重启depoyment
   - [ ] pod
-    - [ ] 
+    - [x] 拷贝deployment.vue 替换变量
+    - [x] 删减功能 创建pod 扩缩容 重启
+    - [x] 修改pod表格字段，增加pod需要的内容
+    - [x] 折叠框展开和点击podname展开
+    - [ ] 增加webshell npm install xterm
