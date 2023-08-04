@@ -126,7 +126,7 @@ index.html --> App.vue --> route/index.js --> src/views/xx.vue
 npm init vue@latest
 
 # 依赖包
-npm install element-plus vue-router nprogess  axios codemirror-editor-vue3 js-yaml json2yaml xterm
+npm install element-plus vue-router nprogess  axios codemirror-editor-vue3 js-yaml json2yaml xterm xterm-addon-fit
 
 
 # 测试
@@ -184,4 +184,8 @@ npm build
     - [x] 删减功能 创建pod 扩缩容 重启
     - [x] 修改pod表格字段，增加pod需要的内容
     - [x] 折叠框展开和点击podname展开
-    - [ ] 增加webshell npm install xterm
+    - [x] container日志
+    - [ ] webshell npm install xterm xterm-addon-fit 
+      - [x] socket
+      - [x] trem 
+  - [ ] daemonset 

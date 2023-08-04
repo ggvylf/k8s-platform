@@ -69,6 +69,7 @@
                             <el-table-column type="expand">
                                  <!-- 展开的内容样式 -->
                                 <template #default="props">
+                                    <!-- 容器信息 -->
                                     <el-tabs v-model="activeName" type="card">
                                         <el-tab-pane label="容器" name="container">
                                             <el-card shadow="never" style="border-radius:1px;" :body-style="{padding:'5px'}">
@@ -97,18 +98,23 @@
                                                 </el-table>
                                             </el-card>
                                         </el-tab-pane>
+                                        <!-- 日志 -->
                                         <el-tab-pane label="日志" name="log">
                                             <el-card shadow="never" style="border-radius:1px;" :body-style="{padding:'5px'}">
                                                 <el-row :gutter="10">
+                                                    <!-- 选择框 pod中可能有多个container -->
                                                     <el-col :span="3">
                                                         <el-select size="small" v-model="containerValue" placeholder="请选择">
                                                             <el-option v-for="item in containerList" :key="item" :value="item">
                                                             </el-option>
                                                         </el-select>
                                                     </el-col>
+                                                    <!-- 查看按钮 -->
                                                     <el-col :span="2">
-                                                        <el-button style="border-radius:2px;" size="small" type="primary" @click="getPodLog(props.row.metadata.name)">查看</el-button>
+                                                        <el-button style="border-radius:2px;" size="small" type="primary" 
+                                                        @click="getPodLog(props.row.metadata.name)">查看</el-button>
                                                     </el-col>
+                                                    <!-- 日志内容 -->
                                                     <el-col :span="24" style="margin-top: 5px">
                                                         <el-card shadow="never" class="pod-body-log-card" :body-style="{padding:'5px'}">
                                                             <span class="pod-body-log-span">{{ logContent }}</span>
@@ -117,21 +123,26 @@
                                                  </el-row>
                                             </el-card>
                                         </el-tab-pane>
+                                        <!-- 终端 -->
                                         <el-tab-pane label="终端" name="shell">
                                             <el-card shadow="never" style="border-radius:1px;" :body-style="{padding:'5px'}">
                                                 <el-row :gutter="10">
+                                                    <!-- 选择列表 -->
                                                     <el-col :span="3">
                                                         <el-select size="small" v-model="containerValue" placeholder="请选择">
                                                             <el-option v-for="item in containerList" :key="item" :value="item">
                                                             </el-option>
                                                         </el-select>
                                                     </el-col>
+                                                    <!-- 连接按钮 -->
                                                     <el-col :span="1">
                                                         <el-button style="border-radius:2px;" size="small" type="primary" @click="initSocket(props.row)">连接</el-button>
                                                     </el-col>
+                                                    <!-- 关闭按钮 -->
                                                     <el-col :span="1">
                                                         <el-button style="border-radius:2px;" size="small" type="danger" @click="closeSocket()">关闭</el-button>
                                                     </el-col>
+                                                    <!-- 终端界面 -->
                                                     <el-col :span="24" style="margin-top: 5px">
                                                         <el-card shadow="never" class="pod-body-shell-card" :body-style="{padding:'5px'}">
                                                             <div id="xterm"></div>
@@ -143,6 +154,7 @@
                                     </el-tabs>
                                 </template>
                             </el-table-column>
+                            <!-- 表格相关字段 -->
                             <el-table-column align=left label="Pod名">
                                 <template v-slot="scope">
                                     <!-- 点击podname触发展开 -->
@@ -180,6 +192,7 @@
                                 </template>
                             </el-table-column>
                         </el-table>
+                        <!-- 分页 -->
                         <el-pagination
                         class="pod-body-pagination"
                         background
@@ -195,6 +208,7 @@
                 </div>
             </el-col>
         </el-row>
+        <!-- yaml弹出框 -->
         <el-dialog title="YAML信息" v-model="yamlDialog" width="45%" top="5%">
             <codemirror
                 :value="contentYaml"
@@ -286,6 +300,8 @@ export default {
                     namespace: ''
                 }
             },
+
+            // 日志
             logContent: '',
             getPodLogData: {
                 url: common.k8sPodLog,
@@ -295,6 +311,7 @@ export default {
                     namespace: ''
                 }
             },
+            // 终端和websocket
             term: null,
             socket: null
         }
@@ -472,12 +489,15 @@ export default {
                 key !== podName ? this.expandMap[key] = 0 : ''
             }
         },
+
+        // 获取当前pod的container
         getPodContainer(row) {
             this.getPodContainerData.params.pod_name = row.metadata.name
             this.getPodContainerData.params.namespace = this.namespaceValue
             httpClient.get(this.getPodContainerData.url, {params: this.getPodContainerData.params})
             .then(res => {
                 this.containerList = res.data
+                // 把container名字填入变量，否则log那里的select是空的
                 this.containerValue = this.containerList[0]
             })
             .catch(res => {
@@ -486,6 +506,8 @@ export default {
                 })
             })
         },
+
+        // 获取日志
         getPodLog(podName) {
             this.getPodLogData.params.pod_name = podName
             this.getPodLogData.params.container_name = this.containerValue
@@ -500,7 +522,61 @@ export default {
                 })
             })
         },
+
+ 
+        // 初始化websocket
+        initSocket(row) {
+            // 拼接后端api参数
+            let terminalWsUrl = common.k8sTerminalWs + "?pod_name=" + row.metadata.name + "&container_name=" + this.containerValue + "&namespace=" + this.namespaceValue
+            this.socket = new WebSocket(terminalWsUrl);
+            this.socketOnClose();
+            this.socketOnOpen();
+            this.socketOnMessage();
+            this.socketOnError();
+        },
+        // 实现固定的几个方法
+        // 打开websocket
+        socketOnOpen() {
+            this.socket.onopen = () => {
+                // 初始化终端
+                this.initTerm()
+            }
+        },
+
+        // 接收消息
+        socketOnMessage() {
+            this.socket.onmessage = (msg) => {
+                // 格式转换
+                let content = JSON.parse(msg.data)
+                this.term.write(content.data)
+            }
+        },
+        // 关闭websocket
+        socketOnClose() {
+            this.socket.onclose = () => {
+                this.term.write("链接已关闭")
+            }
+        },
+        // 连接失败
+        socketOnError() {
+            this.socket.onerror = () => {
+                console.log('socket 链接失败')
+            }
+        },
+        // 关闭按钮操作
+        closeSocket() {
+            if (this.socket === null) {
+                    return 
+                }
+                // 关闭终端
+            this.term.write("链接关闭中。。。")
+            // 关闭websocket
+            this.socket.close()
+        },
+
+        // 初始化终端
         initTerm() {
+            // 初始化终端
             this.term = new Terminal({
                 rendererType: 'canvas',
                 rows: 30,
@@ -516,19 +592,28 @@ export default {
                 cursor: 'help'
                 }
             });
+            // 绑定dom
             this.term.open(document.getElementById('xterm'))
+            // 适应终端大小 这里继承父元素的
             const fitAddon = new FitAddon()
             this.term.loadAddon(fitAddon)
             fitAddon.fit();
+            // 获取焦点
             this.term.focus();
-            let _this = this;
+            // 接收数据并发送
+            // 注意这里重定义了一个this
+            // 常见于方法中调用方法，避免作用域问题导致获取不到this，获取的是initTerm()的this
+            let mythis = this;
             this.term.onData(function (key) {
+                // 后端定义的格式 {"operation":"stdin","data","执行的具体命令"}
                 let msgOrder = {
                 operation: 'stdin',
                 data: key,
                 };
-                _this.socket.send(JSON.stringify(msgOrder));
+                mythis.socket.send(JSON.stringify(msgOrder));
             });
+
+            // 调整大小 
             let msgOrder2 = {
                 operation: 'resize',
                 cols: this.term.cols,
@@ -536,42 +621,6 @@ export default {
             };
             this.socket.send(JSON.stringify(msgOrder2))
         },
-        initSocket(row) {
-            let terminalWsUrl = common.k8sTerminalWs + "?pod_name=" + row.metadata.name + "&container_name=" + this.containerValue + "&namespace=" + this.namespaceValue
-            this.socket = new WebSocket(terminalWsUrl);
-            this.socketOnClose();
-            this.socketOnOpen();
-            this.socketOnMessage();
-            this.socketOnError();
-        },
-        socketOnOpen() {
-            this.socket.onopen = () => {
-                this.initTerm()
-            }
-        },
-        socketOnMessage() {
-            this.socket.onmessage = (msg) => {
-                let content = JSON.parse(msg.data)
-                this.term.write(content.data)
-            }
-        },
-        socketOnClose() {
-            this.socket.onclose = () => {
-                this.term.write("链接已关闭")
-            }
-        },
-        socketOnError() {
-            this.socket.onerror = () => {
-                console.log('socket 链接失败')
-            }
-        },
-        closeSocket() {
-            if (this.socket === null) {
-                    return 
-                }
-            this.term.write("链接关闭中。。。")
-            this.socket.close()
-        }
     },
     watch: {
         namespaceValue: {
@@ -581,6 +630,7 @@ export default {
                 this.getPods()
             }
         },
+        // 标签页切换到日志，自动加载日志
         activeName: {
             handler() {
                 if ( this.activeName == 'log' ) {
@@ -597,6 +647,7 @@ export default {
         this.getPods()
     },
     beforeUnmount() {
+        // 关闭页面之前关闭websocket连接
         if ( this.socket !== null ) {
             this.socket.close()
         }
