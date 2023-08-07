@@ -49,6 +49,56 @@ const routers = [
     },
 
 
+    // 集群管理
+    {
+        path:'/cluster',
+        name: '集群管理',
+        component: Layout,
+        icon:'home-filled',
+        meta:{
+            title:"集群管理",
+            requireAuth: false,
+        },
+        children: [
+            {
+                path:'/cluster/node',
+                name: 'Node',
+                icon: 'el-icon-s-data',
+                meta:{
+                    title:"node",
+                    requireAuth: false,
+                },
+                component:() => import('@/views/node/Node.vue'),
+                        
+            },
+            {
+                path:'/cluster/namespace',
+                name: 'Namespace',
+                icon: 'el-icon-s-data',
+                meta:{
+                    title:"namespace",
+                    requireAuth: false,
+                },
+                component:() => import('@/views/namespace/Namespace.vue'),
+                        
+            },
+            {
+                path:'/cluster/pv',
+                name: 'Pv',
+                icon: 'el-icon-s-data',
+                meta:{
+                    title:"pv",
+                    requireAuth: false,
+                },
+                component:() => import('@/views/pv/Pv.vue'),
+                        
+            },
+
+        ]
+        
+    },
+        
+
     // 工作负载
     {
         path:'/workload',
@@ -82,10 +132,34 @@ const routers = [
                 component:() => import('@/views/pod/Pod.vue'),
                         
             },
+            {
+                path:'/workload/daemonset',
+                name: 'Daemonset',
+                icon: 'el-icon-document-add',
+                meta:{
+                    title:"daemonset",
+                    requireAuth: false,
+                },
+                component:() => import('@/views/daemonset/Daemonset.vue'),
+                        
+            },
+            {
+                path:'/workload/statefulset',
+                name: 'Statefulset',
+                icon: 'el-icon-document-add',
+                meta:{
+                    title:"statefulset",
+                    requireAuth: false,
+                },
+                component:() => import('@/views/statefulset/Statefulset.vue'),
+                        
+            },
         ]
         
     },
-    
+
+
+
 
 
 

@@ -11,6 +11,7 @@ vue
 
 # 代码参考
 https://github.com/dqzboy/DKube
+
 https://github.com/dnsjia/luban
 
 
@@ -101,23 +102,23 @@ index.html --> App.vue --> route/index.js --> src/views/xx.vue
 ## 代码目录
 ```shell
 .
-├── index.html
-├── node_modules # 模块
-├── package.json
-├── package-lock.json
 ├── public
-│   └── favicon.ico
-├── README.md
-├── src
-│   ├── App.vue
-│   ├── assets 
-│   ├── components
-│   ├── layout # 布局
-│   ├── main.js
-│   ├── router # 路由
-│   ├── utils  # 工具
-│   └── views  # 视图
-└── vite.config.js
+└── src
+    ├── assets
+    │   ├── avator
+    │   ├── img
+    │   └── k8s
+    ├── components
+    │   └── icons
+    ├── layout # 布局
+    ├── router # 路由
+    ├── utils # 工具 拦截器
+    └── views # 视图
+        ├── common #公共视图和后端接口
+        ├── damonset
+        ├── deployment
+        ├── home
+        └── pod
 
 ```
 ## npm命令相关
@@ -187,5 +188,22 @@ npm build
     - [x] container日志
     - [ ] webshell npm install xterm xterm-addon-fit 
       - [x] socket
-      - [x] trem 
-  - [ ] daemonset 
+      - [x] xtrem 
+  - [ ] daemonset
+    - [x] 增加路由规则 
+    - [x] 拷贝deployment代码
+    - [x] 修改容器组的计算参数，跟deployment不同
+  - [ ] statusful
+    - [x] 增加路由规则 
+    - [x] 拷贝daemonset代码
+    - [x] 修改容器组的计算参数，跟deployment相同
+- [ ] 集群管理
+  - [x] 修改路由规则
+  - [x] 创建文件和目录
+  - [x] node
+  - [x] namespace
+  - [x] pv
+  - [ ] pvc
+  - [ ] ingress
+  - [ ] service
+  - [ ] 
