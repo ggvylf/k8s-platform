@@ -203,7 +203,15 @@ npm build
   - [x] node
   - [x] namespace
   - [x] pv
-  - [ ] pvc
-  - [ ] ingress
-  - [ ] service
-  - [ ] 
+- [ ] 负载均衡
+  - [x] 修改路由规则
+  - [x] 创建文件和目录
+  - [x] service 修改表格字段 
+  - [x] 抽屉显示换行问题 label-width="100px" label-width="auto"
+  - [x] ingress
+- [ ] 存储和配置
+  - [x]] pvc
+  - [x] configmap
+  - [x] secret
+- [ ] 工作概览 /home
+  - [ ] 仪表盘  

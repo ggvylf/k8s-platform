@@ -94,6 +94,8 @@ const routers = [
                         
             },
 
+                
+
         ]
         
     },
@@ -158,8 +160,88 @@ const routers = [
         
     },
 
+    // 负载均衡
+    {
+
+        path:'/loadblance',
+        name: '负载均衡',
+        component: Layout,
+        icon:'guide',
+        meta:{
+            title:"负载均衡",
+            requireAuth: false,
+        },
+        children: [
+            {
+                path:'/loadblance/service',
+                name: 'Service',
+                icon: 'el-icon-s-data',
+                meta:{
+                    title:"service",
+                    requireAuth: false,
+                },
+                component:() => import('@/views/service/Service.vue'),
+            },
+            {
+                path:'/loadblance/ingress',
+                name: 'Ingress',
+                icon: 'el-icon-s-data',
+                meta:{
+                    title:"ingress",
+                    requireAuth: false,
+                },
+                component:() => import('@/views/ingress/Ingress.vue'),
+            },
+        ]
+        
+    },
 
 
+        // 存储和配置
+        {
+
+            path:'/storage',
+            name: '存储和配置',
+            component: Layout,
+            icon:'ticket',
+            meta:{
+                title:"存储和配置",
+                requireAuth: false,
+            },
+            children: [
+                {
+                    path:'/storage/configmap',
+                    name: 'Configmap',
+                    icon: 'el-icon-s-data',
+                    meta:{
+                        title:"configmap",
+                        requireAuth: false,
+                    },
+                    component:() => import('@/views/configmap/Configmap.vue'),
+                },
+                {
+                    path:'/storage/secret',
+                    name: 'Secret',
+                    icon: 'el-icon-s-data',
+                    meta:{
+                        title:"secret",
+                        requireAuth: false,
+                    },
+                    component:() => import('@/views/secret/Secret.vue'),
+                },
+                {
+                    path:'/storage/pvc',
+                    name: 'Pvc',
+                    icon: 'el-icon-s-data',
+                    meta:{
+                        title:"pvc",
+                        requireAuth: false,
+                    },
+                    component:() => import('@/views/pvc/Pvc.vue'),
+                },
+            ]
+            
+        },
 
 
 
