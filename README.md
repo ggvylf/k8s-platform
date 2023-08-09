@@ -127,7 +127,7 @@ index.html --> App.vue --> route/index.js --> src/views/xx.vue
 npm init vue@latest
 
 # 依赖包
-npm install element-plus vue-router nprogess  axios codemirror-editor-vue3 js-yaml json2yaml xterm xterm-addon-fit
+npm install element-plus vue-router nprogess  axios codemirror-editor-vue3 js-yaml json2yaml xterm xterm-addon-fit echarts
 
 
 # 测试
@@ -215,3 +215,7 @@ npm build
   - [x] secret
 - [ ] 工作概览 /home
   - [ ] 仪表盘  
+    - [x] 布局 使用折叠面板
+    - [x] 安装echarts组件 npm install echarts
+    - [x] 圆形进度条使用el-progress
+    - [x] echarts柱状图

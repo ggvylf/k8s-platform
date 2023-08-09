@@ -1,5 +1,398 @@
 <template>
     <div class="home">
-        this is Home.vue
+        <!-- 折叠框 -->
+        <el-collapse v-model="activeNames">
+            <el-collapse-item title="集群资源" name="1">
+                <!-- 这里增加间距配置 -->
+                <el-row :gutter="10" style="margin-bottom: 10px;">
+                    <!-- 每个图标宽度是5 -->
+                    <el-col :span="5">
+                        <el-card class="home-node-card" :body-style="{padding:'10px'}">
+                            <div style="float:left;padding-top:20%">
+                                <!-- 图形 -->
+                                <el-progress  :stroke-width="20" :show-text="false" type="circle" :percentage="namespaceActive/namespaceTotal * 100"></el-progress>
+                            </div>
+                            <div>
+                                <!-- 数据 -->
+                                <p class="home-node-card-title">命名空间: Active/总量</p>
+                                <p class="home-node-card-num">{{ namespaceActive }}/{{ namespaceTotal }}</p>
+                            </div>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-card class="home-node-card" :body-style="{padding:'10px'}">
+                            <div>
+                                <p class="home-node-card-title">服务数</p>
+                                <p class="home-node-card-num">{{ deploymentTotal }}</p>
+                            </div>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-card class="home-node-card" :body-style="{padding:'10px'}">
+                            <div>
+                                <p class="home-node-card-title">实例数</p>
+                                <p class="home-node-card-num">{{ podTotal }}</p>
+                            </div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+            </el-collapse-item>
+            <el-collapse-item title="节点资源" name="2">
+                <el-row :gutter="10" style="margin-bottom: 10px;">
+                    <el-col :span="5">
+                        <el-card class="home-node-card" :body-style="{padding:'10px'}">
+                            <div style="float:left;padding-top:20%">
+                                <el-progress :stroke-width="20" :show-text="false" type="circle" :percentage="nodeTotal/nodeTotal * 100"></el-progress>
+                            </div>
+                            <div>
+                                <p class="home-node-card-title">节点: Ready/总数量</p>
+                                <p class="home-node-card-num">{{ nodeTotal }}/{{ nodeTotal }}</p>
+                            </div>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-card class="home-node-card" :body-style="{padding:'10px'}">
+                            <div style="float:left;padding-top:20%">
+                                <el-progress :stroke-width="20" :show-text="false" type="circle" :percentage="nodeCpuAllocatable/nodeCpuCapacity * 100"></el-progress>
+                            </div>
+                            <div>
+                                <p class="home-node-card-title">CPU: 可分配/容量</p>
+                                <p class="home-node-card-num">{{ nodeCpuAllocatable }}/{{ nodeCpuCapacity }}</p>
+                            </div>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-card class="home-node-card" :body-style="{padding:'10px'}">
+                            <div style="float:left;padding-top:20%">
+                                <el-progress :stroke-width="20" :show-text="false" type="circle" :percentage="nodeMemAllocatable/nodeMemCapacity * 100"></el-progress>
+                            </div>
+                            <div>
+                                <p class="home-node-card-title">内存: 可分配/容量</p>
+                                <p class="home-node-card-num">{{ specTrans(nodeMemAllocatable) }}Gi/{{ specTrans(nodeMemCapacity) }}Gi</p>
+                            </div>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="5">
+                        <el-card class="home-node-card" :body-style="{padding:'10px'}">
+                            <div style="float:left;padding-top:20%">
+                                <el-progress :stroke-width="20" :show-text="false" type="circle" :percentage="nodePodAllocatable/nodePodAllocatable * 100"></el-progress>
+                            </div>
+                            <div>
+                                <p class="home-node-card-title">POD: 可分配/容量</p>
+                                <p class="home-node-card-num">{{ nodePodAllocatable }}/{{ nodePodAllocatable }}</p>
+                            </div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+            </el-collapse-item>
+            <el-collapse-item title="资源统计" name="3">
+                <el-row :gutter="10">
+                    <!-- 柱状图 -->
+                    <el-col :span="24" style="margin-bottom: 10px;">
+                        <el-card class="home-dash-card" :body-style="{padding:'10px'}">
+                            <div id="podNumDash" style="height: 300px;">
+                            </div>
+                        </el-card>
+                    </el-col>
+                    <el-col :span="24">
+                        <el-card class="home-dash-card" :body-style="{padding:'10px'}">
+                            <div id="deployNumDash" style="height: 300px;">
+                            </div>
+                        </el-card>
+                    </el-col>
+                </el-row>
+            </el-collapse-item>
+        </el-collapse>
     </div>
-</template>
+  </template>
+  
+  <script>
+  import * as echarts from 'echarts'
+  import common from "../common/Config";
+  import httpClient from '../../utils/request';
+  export default {
+    data() {
+        return {
+            // 默认全展开
+            activeNames: ["1", "2", "3"],
+            namespaceActive: 0,
+            namespaceValue: 'default',
+            namespaceTotal: 0,
+            namespaceListUrl: common.k8sNamespaceList,
+            nodeTotal: 0,
+            nodeCpuAllocatable: 0,
+            nodeCpuCapacity: 0,
+            nodeMemAllocatable: 0,
+            nodeMemCapacity: 0,
+            nodePodAllocatable: 0,
+            nodePodCapacity: 0,
+            getNodesData: {
+                url: common.k8sNodeList,
+                params: {}
+            },
+            deploymentTotal: 0,
+            getDeploymentsData: {
+                url: common.k8sDeploymentList,
+                params: {
+                    namespace: '',
+                }
+            },
+            podTotal: 0,
+            getPodsData: {
+                url: common.k8sPodList,
+                params: {
+                    namespace: '',
+                }
+            },
+            podNumNp: [],
+            podNumNpUrl: common.k8sPodNumNp,
+            deploymentNumNp: [],
+            deploymentNumNpUrl: common.k8sDeploymentNumNp
+        }
+    },
+    methods: {
+        getNamespaces() {
+            httpClient.get(this.namespaceListUrl)
+            .then(res => {
+                this.namespaceTotal = res.data.total
+                let namespaceList = res.data.items
+                // 筛选活动的ns
+                let index
+                for (index in namespaceList) {
+                    if (namespaceList[index].status.phase === "Active" ) {
+                        this.namespaceActive = this.namespaceActive + 1
+                    }
+                }
+            })
+            .catch(res => {
+                this.$message.error({
+                message: res.msg
+                })
+            })
+        },
+        specTrans(num) {
+            let a = num / 1024 / 1024
+            return a.toFixed(0)
+        },
+        getNodes() {
+            httpClient.get(this.getNodesData.url, {params: this.getNodesData.params})
+            .then(res => {
+                this.nodeTotal = res.data.total
+                let nodeList = res.data.items
+                let index
+                // 计算资源总和
+                for (index in nodeList) {
+                    // 排除不是数字的cpu个数，虚拟node可能返回不是数字类型的
+                    let isnum = /^\d+$/.test(nodeList[index].status.allocatable.cpu);
+                    if (!isnum) {
+                        continue
+                    }
+                    this.nodeCpuAllocatable = parseInt(nodeList[index].status.allocatable.cpu) + this.nodeCpuAllocatable
+                    this.nodeCpuCapacity = parseInt(nodeList[index].status.capacity.cpu) + this.nodeCpuCapacity
+                    this.nodeMemAllocatable = parseInt(nodeList[index].status.allocatable.memory) + this.nodeMemAllocatable
+                    this.nodeMemCapacity = parseInt(nodeList[index].status.capacity.memory) + this.nodeMemCapacity
+                    this.nodePodAllocatable = parseInt(nodeList[index].status.allocatable.pods) + this.nodePodAllocatable
+                    this.nodePodCapacity = parseInt(nodeList[index].status.capacity.pods) + this.nodePodCapacity
+                }
+            })
+            .catch(res => {
+                this.$message.error({
+                message: res.msg
+                })
+            })
+        },
+        getDeployments() {
+            this.getDeploymentsData.params.namespace = this.namespaceValue
+            httpClient.get(this.getDeploymentsData.url, {params: this.getDeploymentsData.params})
+            .then(res => {
+                this.deploymentTotal = res.data.total
+            })
+            .catch(res => {
+                this.$message.error({
+                message: res.msg
+                })
+            })
+        },
+        getPods() {
+            this.getPodsData.params.namespace = this.namespaceValue
+            httpClient.get(this.getPodsData.url, {params: this.getPodsData.params})
+            .then(res => {
+                this.podTotal = res.data.total
+            })
+            .catch(res => {
+                this.$message.error({
+                message: res.msg
+                })
+            })
+        },
+        getDeploymentNumNp() {
+            httpClient.get(this.deploymentNumNpUrl)
+            .then(res => {
+                this.deploymentNumNp = res.data
+                this.getDeployNumDash()
+            })
+            .catch(res => {
+                this.$message.error({
+                message: res.msg
+                })
+            })
+        },
+        getPodNumNp() {
+            httpClient.get(this.podNumNpUrl)
+            .then(res => {
+                this.podNumNp = res.data
+                this.getPodNumDash()
+            })
+            .catch(res => {
+                this.$message.error({
+                message: res.msg
+                })
+            })
+        },
+        // 图表
+        getPodNumDash(){
+            // 如果已经存在就先注销
+            if (this.podNumDash != null && this.podNumDash != "" && this.podNumDash != undefined) {
+                this.podNumDash.dispose()
+            }
+            // 再初始化 绑定元素
+            this.podNumDash = echarts.init(document.getElementById('podNumDash'));
+            this.podNumDash.setOption({
+                // 标题
+                title: { text: 'Pods per Namespace', textStyle: {color:'rgb(134, 135, 136)'}},
+                // 调色盘，元素顺序使用里边的颜色
+                color: ['#67E0E3', '#9FE6B8', '#FFDB5C','#ff9f7f', '#fb7293', '#E062AE', '#E690D1', '#e7bcf3', '#9d96f5', '#8378EA', '#96BFFF'],
+                // 提示框
+                tooltip: { 
+                    trigger: "axis", 
+                    // 十字准星
+                    axisPointer: { 
+                        type: "cross", 
+                        label: { 
+                            backgroundColor: "#76baf1" 
+                        } 
+                    } 
+                },
+                // 类型解释
+                legend: {
+                    data: ['Pods']
+                },
+                // 数据集
+                dataset: {
+                    // 数据维度，第一个是x轴，其余的都是y轴
+                    dimensions: ['namespace','pod_num'],
+                    // 数据源
+                    source: this.podNumNp
+                },
+                // x轴参数
+                xAxis: {
+                    // 轴类型 常见的有 categroy类目 value数值 time时间 log对数
+                    type: 'category',
+                    axisLabel:{
+                        interval: 0,
+                        // 格式化标签
+                        formatter: function (value) {
+                            // 值大于5就显示省略号
+                            return value.length>5?value.substring(0,5)+'...':value
+                        }
+                    },
+                },
+                // y轴参数
+                yAxis: [
+                    {type: 'value'}
+                ],
+                // 图形系列，一张图表中可以存在多个元素
+                series: [{
+                    // 名称 和legend保持一致
+                    name: 'Pods',
+                    // 柱状图
+                    type: 'bar',
+                    label: {
+                        // 是否显示值
+                        show: true,
+                        // 显示位置
+                        position: 'top'
+                        }
+                    }
+                ]
+            });
+        },
+        getDeployNumDash(){
+            if (this.deployNumDash != null && this.deployNumDash != "" && this.deployNumDash != undefined) {
+                this.deployNumDash.dispose()
+            }
+            this.deployNumDash = echarts.init(document.getElementById('deployNumDash'));
+  
+            this.deployNumDash.setOption({
+                title: { text: 'Deployments per Namespace', textStyle: {color:'rgb(134, 135, 136)'}},
+                color: ['#9FE6B8', '#FFDB5C','#ff9f7f', '#fb7293', '#E062AE', '#E690D1', '#e7bcf3', '#9d96f5', '#8378EA', '#96BFFF'],
+                tooltip: { trigger: "axis", axisPointer: { type: "cross", label: { backgroundColor: "#76baf1" } } },
+                legend: {
+                    data: ['Deployments']
+                },
+                dataset: {
+                    dimensions: ['namespace','deployment_num'],
+                    source: this.deploymentNumNp
+                },
+                xAxis: {
+                    type: 'category',
+                    axisLabel:{
+                        interval: 0,
+                        formatter: function (value) {
+                            return value.length>5?value.substring(0,5)+'...':value
+                        }
+                    },
+                },
+                yAxis: [
+                    {type: 'value'}
+                ],
+                series: [{
+                    name: 'Deployments',
+                    type: 'bar',
+                    label: {
+                        show: true,
+                        position: 'top'
+                        }
+                    }
+                ]
+            });
+        },
+    },
+    beforeMount() {
+        this.getNamespaces()
+        this.getNodes()
+        this.getDeployments()
+        this.getPods()
+        this.getDeploymentNumNp()
+        this.getPodNumNp()
+    }
+  }
+  </script>
+  
+  <!-- 带有scoped css只影响当前组件 父会影响到子组件的根节点 -->
+  <style scoped>
+  /*  __表示使用原生的组件 使用了deep来控制深度*/
+    :v-deep .el-collapse-item__header {
+        font-size: 16px;
+    }
+    .home-node-card {
+        border-radius:1px;
+        text-align: center;
+        background-color: rgb(250, 253, 255);
+    }
+    .home-dash-card {
+        border-radius:1px;
+    }
+    .home-node-card-title {
+        font-size: 12px;
+    }
+    .home-node-card-num {
+        font-size: 22px;
+        font-weight: bold;
+        color: rgb(63, 92, 135);
+    }
+    :v-deep .el-progress-circle {
+        height: 50px !important;
+        width: 50px !important;
+    }
+  </style>
