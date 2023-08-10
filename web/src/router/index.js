@@ -48,6 +48,31 @@ const routers = [
         
     },
 
+    // workflow
+    {
+        path:'/workflow',
+        component: Layout,
+        icon:'VideoPlay',
+        meta:{
+            title:"workflow",
+            requireAuth: false,
+        },
+        children: [
+            {
+                path:'/workflow',
+                name: 'workflow',
+                icon: 'VideoPlay',
+                meta:{
+                    title:"workflow",
+                    requireAuth: false,
+                },
+                component:() => import('@/views/workflow/Workflow.vue'),
+                        
+            },
+        ]
+        
+    },
+
 
     // 集群管理
     {

@@ -210,7 +210,7 @@ npm build
   - [x] 抽屉显示换行问题 label-width="100px" label-width="auto"
   - [x] ingress
 - [ ] 存储和配置
-  - [x]] pvc
+  - [x] pvc
   - [x] configmap
   - [x] secret
 - [ ] 工作概览 /home
@@ -219,3 +219,9 @@ npm build
     - [x] 安装echarts组件 npm install echarts
     - [x] 圆形进度条使用el-progress
     - [x] echarts柱状图
+  - [ ] 工作流 workflow
+    - [x] 路由 
+    - [x] 布局 工作流图 工作流信息表格 每个step用抽屉实现
+    - [x] 创建workflow抽屉 
+    - [x] step的完成联动 工作流图变更
+- [ ] 登录登出
