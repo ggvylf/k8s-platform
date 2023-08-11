@@ -157,10 +157,12 @@ export default {
                 this.asideWidth = '64px'
             }
         },
-        // 登出
+        // 登出操作
         logout() {
+            // 清理localStorage
             localStorage.removeItem('username');
             localStorage.removeItem('token');
+            // 跳转到登录
             this.$router.push('/login');
         }
     },

@@ -127,8 +127,8 @@ index.html --> App.vue --> route/index.js --> src/views/xx.vue
 npm init vue@latest
 
 # 依赖包
-npm install element-plus vue-router nprogess  axios codemirror-editor-vue3 js-yaml json2yaml xterm xterm-addon-fit echarts
-
+npm install element-plus vue-router nprogess  axios codemirror-editor-vue3 js-yaml json2yaml xterm xterm-addon-fit echarts moment jsonwebtoken buffer
+ 
 
 # 测试
 npm run dev
@@ -225,3 +225,25 @@ npm build
     - [x] 创建workflow抽屉 
     - [x] step的完成联动 工作流图变更
 - [ ] 登录登出
+  - [ ] npm install moment jsonwebtoken  buffer
+  - [ ] 登录逻辑 验证账号密码 生成token 存入localStorage 跳转到/ 
+  - [ ] 访问其他路径的时候检查token 路由守卫+拦截器
+  - [ ] 登出逻辑 在Layout.vue中 删除tokon 跳转到/login 
+- [ ]  buffer加载问题
+
+
+
+# 代码发布和部署
+## 前端
+```shell
+rm ./node_modules
+npm install
+npm run build
+```
+
+## 后端
+```shell
+go mod tidy
+go build -o k8s-platform
+
+```

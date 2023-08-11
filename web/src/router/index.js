@@ -1,5 +1,9 @@
 // 导入路由模式
 import {createRouter,createWebHistory} from 'vue-router'
+// jwt
+import jwt from 'jsonwebtoken';
+
+
 
 // 进度条
 import Nprogress from 'nprogress'
@@ -7,6 +11,7 @@ import 'nprogress/nprogress.css'
 
 // 布局
 import Layout from '@/layout/Layout.vue'
+
 
 // 路由规则
 const routers = [
@@ -47,6 +52,17 @@ const routers = [
         ]
         
     },
+
+
+    // 登录
+    {
+
+        path:'/login',
+        name: 'login',
+        component:() => import('@/views/login/Login.vue'),
+
+    },
+
 
     // workflow
     {
@@ -222,51 +238,51 @@ const routers = [
     },
 
 
-        // 存储和配置
-        {
+    // 存储和配置
+    {
 
-            path:'/storage',
-            name: '存储和配置',
-            component: Layout,
-            icon:'ticket',
-            meta:{
-                title:"存储和配置",
-                requireAuth: false,
-            },
-            children: [
-                {
-                    path:'/storage/configmap',
-                    name: 'Configmap',
-                    icon: 'el-icon-s-data',
-                    meta:{
-                        title:"configmap",
-                        requireAuth: false,
-                    },
-                    component:() => import('@/views/configmap/Configmap.vue'),
-                },
-                {
-                    path:'/storage/secret',
-                    name: 'Secret',
-                    icon: 'el-icon-s-data',
-                    meta:{
-                        title:"secret",
-                        requireAuth: false,
-                    },
-                    component:() => import('@/views/secret/Secret.vue'),
-                },
-                {
-                    path:'/storage/pvc',
-                    name: 'Pvc',
-                    icon: 'el-icon-s-data',
-                    meta:{
-                        title:"pvc",
-                        requireAuth: false,
-                    },
-                    component:() => import('@/views/pvc/Pvc.vue'),
-                },
-            ]
-            
+        path:'/storage',
+        name: '存储和配置',
+        component: Layout,
+        icon:'ticket',
+        meta:{
+            title:"存储和配置",
+            requireAuth: false,
         },
+        children: [
+            {
+                path:'/storage/configmap',
+                name: 'Configmap',
+                icon: 'el-icon-s-data',
+                meta:{
+                    title:"configmap",
+                    requireAuth: false,
+                },
+                component:() => import('@/views/configmap/Configmap.vue'),
+            },
+            {
+                path:'/storage/secret',
+                name: 'Secret',
+                icon: 'el-icon-s-data',
+                meta:{
+                    title:"secret",
+                    requireAuth: false,
+                },
+                component:() => import('@/views/secret/Secret.vue'),
+            },
+            {
+                path:'/storage/pvc',
+                name: 'Pvc',
+                icon: 'el-icon-s-data',
+                meta:{
+                    title:"pvc",
+                    requireAuth: false,
+                },
+                component:() => import('@/views/pvc/Pvc.vue'),
+            },
+        ]
+        
+    },
 
 
 
@@ -328,9 +344,25 @@ router.beforeEach((to,from,next) => {
         document.title="k8s"
     }
 
-
     // 放行
     next()
+
+})
+
+router.beforeEach((to,from,next) => {
+    // 访问额页面增加token验证
+    jwt.verify(localStorage.getItem("token"),"mytoken",function (err) {
+        // 访问的是登录页 放行
+        if (to.path==="/login") {
+            next()
+            // 验证token报错，跳转到登录
+        }else if (err) {
+            next("/login")
+            // 验证token正确 放行
+        }else {
+            next()
+        }
+    })
 })
 
 router.afterEach((to,from,next) => {
